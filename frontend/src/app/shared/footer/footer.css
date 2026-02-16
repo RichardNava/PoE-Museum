@@ -1,0 +1,39 @@
+.footer {
+  background: #161316;
+  color: #FFFFFF;
+  padding: 1rem 0;
+  text-align: center;
+  border-top: 1px solid #12C9FF;
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.footer-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.datetime {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  color: #FF9EF0;
+}
+
+.contact-email {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #12C9FF;
+  text-decoration: underline;
+}
+
+.contact-email:hover {
+  color: #FF9EF0;
+}
