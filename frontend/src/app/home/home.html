@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="builds-grid">
+    <div class="build-card" *ngFor="let build of builds" (click)="viewBuild(build._id)">
+      <div class="card-image">
+        <img [src]="getImageUrl(build.imagen)" />
+      </div>
+      <div class="card-content">
+        <h3>{{ build.nombre }}</h3>
+        <p>{{ build.clase }} - {{ build.ascendencia }}</p>
+        <p>Autor: {{ build.autor }}</p>
+      </div>
+    </div>
+  </div>
+</div>

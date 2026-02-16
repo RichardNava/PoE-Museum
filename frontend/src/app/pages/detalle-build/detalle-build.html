@@ -1,0 +1,121 @@
+<div class="container" *ngIf="build">
+  <div class="build-detail">
+    <!-- Imagen -->
+    <div class="section imagen-section">
+      <img [src]="getImageUrl(build.imagen)" alt="{{build.nombre}}" />
+    </div>
+
+    <!-- Información principal -->
+    <div class="section nombre-section">
+      <h1>{{ build.nombre }}</h1>
+    </div>
+
+    <div class="section clase-section">
+      <h2>Clase</h2>
+      <p>{{ build.clase }} - {{ build.ascendencia }}</p>
+    </div>
+
+    <div class="section autor-section">
+      <h2>Autor</h2>
+      <p>{{ build.autor }}</p>
+    </div>
+
+    <div class="section descripcion-section">
+      <h2>Descripción</h2>
+      <p>{{ build.descripcion }}</p>
+    </div>
+
+    <div class="section ventajas-section">
+      <h2>Ventajas</h2>
+      <p>{{ build.ventajas }}</p>
+    </div>
+
+    <div class="section desventajas-section">
+      <h2>Desventajas</h2>
+      <p>{{ build.desventajas }}</p>
+    </div>
+
+    <!-- Valoraciones -->
+    <div class="section valoraciones-section">
+      <h2>Valoraciones</h2>
+      <div class="valoraciones-grid">
+        <div class="valoracion-item">
+          <span>Daño Boss</span>
+          <div class="stars">
+            <span *ngFor="let star of getStars(1); let i = index" 
+                  class="star"
+                  [style.--fill]="getStarFill(i, build.valoraciones.boss_dmg)">
+              ★
+            </span>
+          </div>
+        </div>
+        <div class="valoracion-item">
+          <span>Map Speed/Clear</span>
+          <div class="stars">
+            <span *ngFor="let star of getStars(1); let i = index" 
+                  class="star"
+                  [style.--fill]="getStarFill(i, build.valoraciones.map_speed_clear)">
+              ★
+            </span>
+          </div>
+        </div>
+        <div class="valoracion-item">
+          <span>Supervivencia</span>
+          <div class="stars">
+            <span *ngFor="let star of getStars(1); let i = index" 
+                  class="star"
+                  [style.--fill]="getStarFill(i, build.valoraciones.survivality)">
+              ★
+            </span>
+          </div>
+        </div>
+        <div class="valoracion-item">
+          <span>Dificultad</span>
+          <div class="stars">
+            <span *ngFor="let star of getStars(1); let i = index" 
+                  class="star"
+                  [style.--fill]="getStarFill(i, build.valoraciones.difficulty)">
+              ★
+            </span>
+          </div>
+        </div>
+        <div class="valoracion-item">
+          <span>Diversión</span>
+          <div class="stars">
+            <span *ngFor="let star of getStars(1); let i = index" 
+                  class="star"
+                  [style.--fill]="getStarFill(i, build.valoraciones.fun)">
+              ★
+            </span>
+          </div>
+        </div>
+        <div class="valoracion-item">
+          <span>Comodidad</span>
+          <div class="stars">
+            <span *ngFor="let star of getStars(1); let i = index" 
+                  class="star"
+                  [style.--fill]="getStarFill(i, build.valoraciones.comfort)">
+              ★
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Versiones -->
+    <div class="section versiones-section" *ngIf="build.versiones && build.versiones.length > 0">
+      <h2>Versiones</h2>
+      <ul class="versiones-list">
+        <li *ngFor="let version of build.versiones">
+          <a [href]="version.pobb" target="_blank">{{ version.name }}</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Botones -->
+    <div class="buttons">
+      <button class="btn-volver" (click)="goBack()">Volver</button>
+      <button class="btn-editar" (click)="editBuild()">Editar</button>
+    </div>
+  </div>
+</div>

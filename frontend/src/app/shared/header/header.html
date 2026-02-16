@@ -1,0 +1,27 @@
+<header class="navbar">
+  <div class="navbar-left">
+    <div class="logo">
+      <img src="assets/logo.png" alt="PoE Museum" />
+    </div>
+  </div>
+  
+  <nav class="navbar-center">
+    <ul class="nav-links">
+      <li><a href="#" class="nav-link">Galería</a></li>
+      <li><a href="#" class="nav-link">Crear Build</a></li>
+      <li><a href="#" class="nav-link">Perfil</a></li>
+    </ul>
+  </nav>
+  
+  <div class="navbar-right">
+    <div class="user-menu">
+      <div class="user-icon" (click)="toggleMenu()">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="dropdown-menu" [class.active]="isMenuOpen">
+        <a href="#" class="dropdown-item">Iniciar Sesión</a>
+        <a href="#" class="dropdown-item">Crear Perfil</a>
+      </div>
+    </div>
+  </div>
+</header>
