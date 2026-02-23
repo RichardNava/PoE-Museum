@@ -1,14 +1,47 @@
 <div class="container">
-  <div class="builds-grid">
-    <div class="build-card" *ngFor="let build of builds" (click)="viewBuild(build._id)">
+  <div class="page-header">
+    <h1 class="page-title">Galería de Builds</h1>
+    <p class="page-subtitle">Explora las mejores builds de Path of Exile</p>
+  </div>
+  
+  <div class="builds-grid" *ngIf="builds.length > 0; else emptyState">
+    <div class="build-card" *ngFor="let build of builds; let i = index" (click)="viewBuild(build._id)">
       <div class="card-image">
-        <img [src]="getImageUrl(build.imagen)" />
+        <img *ngIf="build.imagen" [src]="getImageUrl(build.imagen)" [alt]="build.nombre" />
+        <div *ngIf="!build.imagen" class="card-placeholder">
+          <i class="fas fa-shield-alt"></i>
+          <span>Sin imagen</span>
+        </div>
       </div>
       <div class="card-content">
-        <h3>{{ build.nombre }}</h3>
-        <p>{{ build.clase }} - {{ build.ascendencia }}</p>
-        <p>Autor: {{ build.autor }}</p>
+        <div class="card-header">
+          <h3 class="card-title">{{ build.nombre }}</h3>
+          <span class="card-class">
+            <i class="fas fa-crown"></i>
+            {{ build.ascendencia }}
+          </span>
+        </div>
+        <p class="card-author">{{ build.clase }} • {{ build.autor }}</p>
+        <div class="card-stats" *ngIf="build.valoraciones">
+          <span class="stat-badge damage" title="Daño">
+            <i class="fas fa-skull"></i> {{ build.valoraciones.boss_dmg }}
+          </span>
+          <span class="stat-badge comfort" title="Comodidad">
+            <i class="fas fa-star"></i> {{ build.valoraciones.comfort }}
+          </span>
+          <span class="stat-badge survival" title="Supervivencia">
+            <i class="fas fa-heart"></i> {{ build.valoraciones.survivality }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
+  
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <i class="fas fa-folder-open"></i>
+      <h3>No hay builds disponibles</h3>
+      <p>¡Sé el primero en crear una build!</p>
+    </div>
+  </ng-template>
 </div>
