@@ -53,6 +53,7 @@ router.get('/name/:name', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
+        console.log('Datos recibidos en POST /:', JSON.stringify(req.body, null, 2));
         const build = new Build({
             ...req.body,
             fecha_creacion: new Date()
@@ -60,6 +61,7 @@ router.post('/', async (req, res) => {
         const savedBuild = await build.save();
         res.status(201).json(savedBuild);
     } catch (error) {
+        console.error('Error al crear build:', error);
         res.status(400).json({ message: error.message });
     }
 });
