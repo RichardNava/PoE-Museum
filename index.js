@@ -1,17 +1,66 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const connectDB = require('./config/db');
 
 const app = express();
 
+const imagesDir = path.join(__dirname, 'frontend', 'src', 'assets', 'images');
+if (!fs.existsSync(imagesDir)) {
+    fs.mkdirSync(imagesDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, imagesDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, uniqueSuffix + ext);
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = ['image/webp', 'image/png', 'image/jpeg'];
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Tipo de archivo no permitido. Usa: WebP, PNG o JPEG'), false);
+    }
+};
+
+const upload = multer({ 
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 }
+});
+
 // Enable CORS with specific options
 app.use(cors({
-  origin: ['http://localhost:4200', 'http://localhost:8080'],
-  credentials: true
+    origin: ['http://localhost:4200', 'http://localhost:8080'],
+    credentials: true
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+
+// Servir imágenes desde assets
+app.use('/images', express.static(imagesDir));
+
+// Endpoint para subir imágenes
+app.post('/upload', upload.single('image'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'No se ha proporcionado ninguna imagen' });
+    }
+    res.json({ 
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        mimetype: req.file.mimetype
+    });
+});
 
 // Middleware for logging requests
 app.use((req, res, next) => {
