@@ -1,121 +1,191 @@
-<div class="container" *ngIf="build">
+<div class="container" *ngIf="build; else loading">
   <div class="build-detail">
-    <!-- Imagen -->
-    <div class="section imagen-section">
-      <img [src]="getImageUrl(build.imagen)" alt="{{build.nombre}}" />
-    </div>
+    
+    <!-- Fila principal: Imagen a la izquierda, info a la derecha -->
+    <div class="main-content-grid">
+      <!-- Columna izquierda: Imagen -->
+      <div class="left-column">
+        <div class="card imagen-card">
+          <div class="card-title"><i class="fas fa-image"></i> Imagen</div>
+          <div class="image-container" *ngIf="build.imagen; else noImage">
+            <img [src]="getImageUrl(build.imagen)" [alt]="build.nombre" />
+          </div>
+          <ng-template #noImage>
+            <div class="image-container">
+              <div class="image-placeholder">
+                <i class="fas fa-shield-alt"></i>
+                <span>Sin imagen</span>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
 
-    <!-- Información principal -->
-    <div class="section nombre-section">
-      <h1>{{ build.nombre }}</h1>
-    </div>
+      <!-- Columna derecha: Info -->
+      <div class="right-column">
+        <!-- Nombre -->
+        <div class="card nombre-card">
+          <div class="card-title"><i class="fas fa-crown"></i> Nombre</div>
+          <div class="card-content">{{ build.nombre }}</div>
+        </div>
 
-    <div class="section clase-section">
-      <h2>Clase</h2>
-      <p>{{ build.clase }} - {{ build.ascendencia }}</p>
-    </div>
-
-    <div class="section autor-section">
-      <h2>Autor</h2>
-      <p>{{ build.autor }}</p>
-    </div>
-
-    <div class="section descripcion-section">
-      <h2>Descripción</h2>
-      <p>{{ build.descripcion }}</p>
-    </div>
-
-    <div class="section ventajas-section">
-      <h2>Ventajas</h2>
-      <p>{{ build.ventajas }}</p>
-    </div>
-
-    <div class="section desventajas-section">
-      <h2>Desventajas</h2>
-      <p>{{ build.desventajas }}</p>
-    </div>
-
-    <!-- Valoraciones -->
-    <div class="section valoraciones-section">
-      <h2>Valoraciones</h2>
-      <div class="valoraciones-grid">
-        <div class="valoracion-item">
-          <span>Daño Boss</span>
-          <div class="stars">
-            <span *ngFor="let star of getStars(1); let i = index" 
-                  class="star"
-                  [style.--fill]="getStarFill(i, build.valoraciones.boss_dmg)">
-              ★
-            </span>
+        <!-- Ascendencia y Autor en la misma línea -->
+        <div class="info-row">
+          <div class="card">
+            <div class="card-title"><i class="fas fa-star"></i> Ascendencia</div>
+            <div class="card-content">
+              <i class="fas fa-crown"></i> {{ build.ascendencia }}
+            </div>
+          </div>
+          <div class="card autor-card">
+            <div class="card-title"><i class="fas fa-user"></i> Autor</div>
+            <div class="card-content">
+              <i class="fas fa-user-edit"></i> {{ build.autor }}
+            </div>
           </div>
         </div>
-        <div class="valoracion-item">
-          <span>Map Speed/Clear</span>
-          <div class="stars">
-            <span *ngFor="let star of getStars(1); let i = index" 
-                  class="star"
-                  [style.--fill]="getStarFill(i, build.valoraciones.map_speed_clear)">
-              ★
-            </span>
+
+        <!-- Valoraciones -->
+        <div class="card">
+          <div class="card-title"><i class="fas fa-star-half-alt"></i> Valoraciones</div>
+          <div class="valoraciones-grid">
+            <div class="valoracion-item">
+              <span class="valoracion-label">Daño Boss</span>
+              <div class="stars">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      class="star"
+                      [class.filled]="star <= getValoracion('boss_dmg')"
+                      [class.partial]="star === ceil(getValoracion('boss_dmg')) && getValoracion('boss_dmg') % 1 !== 0"
+                      [style.--fill]="getPartialFill(getValoracion('boss_dmg')) + '%'">
+                  ★
+                </span>
+              </div>
+            </div>
+            <div class="valoracion-item">
+              <span class="valoracion-label">Map Speed/Clear</span>
+              <div class="stars">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      class="star"
+                      [class.filled]="star <= getValoracion('map_speed_clear')"
+                      [class.partial]="star === ceil(getValoracion('map_speed_clear')) && getValoracion('map_speed_clear') % 1 !== 0"
+                      [style.--fill]="getPartialFill(getValoracion('map_speed_clear')) + '%'">
+                  ★
+                </span>
+              </div>
+            </div>
+            <div class="valoracion-item">
+              <span class="valoracion-label">Supervivencia</span>
+              <div class="stars">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      class="star"
+                      [class.filled]="star <= getValoracion('survivality')"
+                      [class.partial]="star === ceil(getValoracion('survivality')) && getValoracion('survivality') % 1 !== 0"
+                      [style.--fill]="getPartialFill(getValoracion('survivality')) + '%'">
+                  ★
+                </span>
+              </div>
+            </div>
+            <div class="valoracion-item">
+              <span class="valoracion-label">Dificultad</span>
+              <div class="stars">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      class="star"
+                      [class.filled]="star <= getValoracion('difficulty')"
+                      [class.partial]="star === ceil(getValoracion('difficulty')) && getValoracion('difficulty') % 1 !== 0"
+                      [style.--fill]="getPartialFill(getValoracion('difficulty')) + '%'">
+                  ★
+                </span>
+              </div>
+            </div>
+            <div class="valoracion-item">
+              <span class="valoracion-label">Diversión</span>
+              <div class="stars">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      class="star"
+                      [class.filled]="star <= getValoracion('fun')"
+                      [class.partial]="star === ceil(getValoracion('fun')) && getValoracion('fun') % 1 !== 0"
+                      [style.--fill]="getPartialFill(getValoracion('fun')) + '%'">
+                  ★
+                </span>
+              </div>
+            </div>
+            <div class="valoracion-item">
+              <span class="valoracion-label">Comodidad</span>
+              <div class="stars">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      class="star"
+                      [class.filled]="star <= getValoracion('comfort')"
+                      [class.partial]="star === ceil(getValoracion('comfort')) && getValoracion('comfort') % 1 !== 0"
+                      [style.--fill]="getPartialFill(getValoracion('comfort')) + '%'">
+                  ★
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="valoracion-item">
-          <span>Supervivencia</span>
-          <div class="stars">
-            <span *ngFor="let star of getStars(1); let i = index" 
-                  class="star"
-                  [style.--fill]="getStarFill(i, build.valoraciones.survivality)">
-              ★
-            </span>
-          </div>
-        </div>
-        <div class="valoracion-item">
-          <span>Dificultad</span>
-          <div class="stars">
-            <span *ngFor="let star of getStars(1); let i = index" 
-                  class="star"
-                  [style.--fill]="getStarFill(i, build.valoraciones.difficulty)">
-              ★
-            </span>
-          </div>
-        </div>
-        <div class="valoracion-item">
-          <span>Diversión</span>
-          <div class="stars">
-            <span *ngFor="let star of getStars(1); let i = index" 
-                  class="star"
-                  [style.--fill]="getStarFill(i, build.valoraciones.fun)">
-              ★
-            </span>
-          </div>
-        </div>
-        <div class="valoracion-item">
-          <span>Comodidad</span>
-          <div class="stars">
-            <span *ngFor="let star of getStars(1); let i = index" 
-                  class="star"
-                  [style.--fill]="getStarFill(i, build.valoraciones.comfort)">
-              ★
-            </span>
+
+        <!-- Versiones -->
+        <div class="card" *ngIf="build.versiones && build.versiones.length > 0">
+          <div class="card-title"><i class="fas fa-code-branch"></i> Versiones PoB</div>
+          <div class="versiones-list">
+            <div class="version-item" *ngFor="let version of build.versiones">
+              <i class="fas fa-link"></i>
+              <a [href]="version.pobb" target="_blank" rel="noopener">{{ version.name }}</a>
+              <i class="fas fa-external-link-alt external-icon"></i>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Versiones -->
-    <div class="section versiones-section" *ngIf="build.versiones && build.versiones.length > 0">
-      <h2>Versiones</h2>
-      <ul class="versiones-list">
-        <li *ngFor="let version of build.versiones">
-          <a [href]="version.pobb" target="_blank">{{ version.name }}</a>
-        </li>
-      </ul>
+    <!-- Fila inferior: Descripción, Ventajas, Desventajas -->
+    <div class="bottom-row">
+      <!-- Descripción -->
+      <div class="card description-card">
+        <div class="card-title"><i class="fas fa-align-left"></i> Descripción</div>
+        <div class="card-content">{{ build.descripcion }}</div>
+      </div>
+
+      <!-- Ventajas y Desventajas en la misma fila -->
+      <div class="pros-cons-row">
+        <!-- Ventajas -->
+        <div class="card pros-card">
+          <div class="card-title"><i class="fas fa-thumbs-up"></i> Ventajas</div>
+          <ul class="pros-cons-list">
+            <li *ngFor="let ventaja of parseList(build.ventajas)">
+              {{ ventaja }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Desventajas -->
+        <div class="card cons-card">
+          <div class="card-title"><i class="fas fa-thumbs-down"></i> Desventajas</div>
+          <ul class="pros-cons-list">
+            <li *ngFor="let desventaja of parseList(build.desventajas)">
+              {{ desventaja }}
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <!-- Botones -->
     <div class="buttons">
-      <button class="btn-volver" (click)="goBack()">Volver</button>
-      <button class="btn-editar" (click)="editBuild()">Editar</button>
+      <button class="btn btn-volver" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+      <button class="btn btn-editar" (click)="editBuild()">
+        <i class="fas fa-edit"></i> Editar
+      </button>
     </div>
+
   </div>
 </div>
+
+<ng-template #loading>
+  <div class="loading">
+    <i class="fas fa-spinner"></i>
+    <span>Cargando build...</span>
+  </div>
+</ng-template>
