@@ -12,6 +12,8 @@ import { Build, Valoraciones } from '../../models/build.model';
 })
 export class DetalleBuild implements OnInit {
   build: Build | null = null;
+  isImageModalOpen = false;
+  isVersionesOpen = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -85,5 +87,19 @@ export class DetalleBuild implements OnInit {
 
   getPartialFill(value: number): number {
     return (value % 1) * 100;
+  }
+
+  openImageModal(): void {
+    if (this.build?.imagen) {
+      this.isImageModalOpen = true;
+    }
+  }
+
+  closeImageModal(): void {
+    this.isImageModalOpen = false;
+  }
+
+  toggleVersiones(): void {
+    this.isVersionesOpen = !this.isVersionesOpen;
   }
 }
