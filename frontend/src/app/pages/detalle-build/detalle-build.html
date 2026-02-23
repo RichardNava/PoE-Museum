@@ -5,7 +5,7 @@
     <div class="main-content-grid">
       <!-- Columna izquierda: Imagen -->
       <div class="left-column">
-        <div class="card imagen-card">
+        <div class="card imagen-card" (click)="openImageModal()" style="cursor: pointer;">
           <div class="card-title"><i class="fas fa-image"></i> Imagen</div>
           <div class="image-container" *ngIf="build.imagen; else noImage">
             <img [src]="getImageUrl(build.imagen)" [alt]="build.nombre" />
@@ -19,6 +19,22 @@
             </div>
           </ng-template>
         </div>
+
+        <!-- Ascendencia y Autor debajo de la imagen -->
+        <div class="info-cards-row">
+          <div class="card">
+            <div class="card-title"><i class="fas fa-star"></i> Ascendencia</div>
+            <div class="card-content">
+              <i class="fas fa-crown"></i> {{ build.ascendencia }}
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="fas fa-user"></i> Autor</div>
+            <div class="card-content">
+              <i class="fas fa-user-edit"></i> {{ build.autor }}
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Columna derecha: Info -->
@@ -29,23 +45,7 @@
           <div class="card-content">{{ build.nombre }}</div>
         </div>
 
-        <!-- Ascendencia y Autor en la misma línea -->
-        <div class="info-row">
-          <div class="card">
-            <div class="card-title"><i class="fas fa-star"></i> Ascendencia</div>
-            <div class="card-content">
-              <i class="fas fa-crown"></i> {{ build.ascendencia }}
-            </div>
-          </div>
-          <div class="card autor-card">
-            <div class="card-title"><i class="fas fa-user"></i> Autor</div>
-            <div class="card-content">
-              <i class="fas fa-user-edit"></i> {{ build.autor }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Valoraciones -->
+        <!-- Valoraciones - 3 columnas -->
         <div class="card">
           <div class="card-title"><i class="fas fa-star-half-alt"></i> Valoraciones</div>
           <div class="valoraciones-grid">
@@ -125,13 +125,23 @@
         </div>
 
         <!-- Versiones -->
-        <div class="card" *ngIf="build.versiones && build.versiones.length > 0">
-          <div class="card-title"><i class="fas fa-code-branch"></i> Versiones PoB</div>
-          <div class="versiones-list">
-            <div class="version-item" *ngFor="let version of build.versiones">
+        <div class="card versiones-card" [class.versiones-expanded]="isVersionesOpen" *ngIf="build.versiones && build.versiones.length > 0">
+          <div class="card-title versions-title" (click)="toggleVersiones()">
+            <div class="title-content"><i class="fas fa-code-branch"></i> Versiones PoB</div>
+            <i class="fas fa-chevron-down version-chevron"></i>
+          </div>
+          <div class="versiones-container">
+            <div class="version-item">
               <i class="fas fa-link"></i>
-              <a [href]="version.pobb" target="_blank" rel="noopener">{{ version.name }}</a>
+              <a [href]="build.versiones[0].pobb" target="_blank" rel="noopener">{{ build.versiones[0].name }}</a>
               <i class="fas fa-external-link-alt external-icon"></i>
+            </div>
+            <div class="versiones-dropdown" *ngIf="isVersionesOpen && build.versiones.length > 1">
+              <div class="version-item" *ngFor="let version of build.versiones.slice(1)">
+                <i class="fas fa-link"></i>
+                <a [href]="version.pobb" target="_blank" rel="noopener">{{ version.name }}</a>
+                <i class="fas fa-external-link-alt external-icon"></i>
+              </div>
             </div>
           </div>
         </div>
@@ -180,6 +190,16 @@
       </button>
     </div>
 
+  </div>
+</div>
+
+<!-- Modal para imagen -->
+<div class="modal-overlay" *ngIf="isImageModalOpen" (click)="closeImageModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeImageModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    <img [src]="build ? getImageUrl(build.imagen) : ''" [alt]="build?.nombre" />
   </div>
 </div>
 
