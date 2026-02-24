@@ -9,14 +9,14 @@ import { Build } from '../models/build.model';
 })
 export class BuildService {
   private apiUrl = 'http://localhost:3000/poem';
-  private assetsUrl = 'assets/images/';
+  private imageUrl = 'http://localhost:3000/images/';
   private buildsCache: Build[] = [];
 
   constructor(private http: HttpClient) {}
 
   getImageUrl(imagen: string): string {
     if (imagen && imagen.trim() !== '') {
-      return this.assetsUrl + imagen;
+      return this.imageUrl + imagen;
     }
     return 'https://placehold.co/300x200/12C9FF/000000?text=No+Image';
   }
@@ -35,5 +35,9 @@ export class BuildService {
 
   getBuildsFromCache(): Build[] {
     return this.buildsCache;
+  }
+
+  createBuild(build: Build): Observable<Build> {
+    return this.http.post<Build>(`${this.apiUrl}`, build);
   }
 }

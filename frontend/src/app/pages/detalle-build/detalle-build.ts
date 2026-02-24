@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { BuildService } from '../../services/build';
-import { Build } from '../../models/build.model';
+import { Build, Valoraciones } from '../../models/build.model';
 
 @Component({
   selector: 'app-detalle-build',
@@ -12,6 +12,8 @@ import { Build } from '../../models/build.model';
 })
 export class DetalleBuild implements OnInit {
   build: Build | null = null;
+  isImageModalOpen = false;
+  isVersionesOpen = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -65,5 +67,39 @@ export class DetalleBuild implements OnInit {
 
   getImageUrl(imagen: string): string {
     return this.buildService.getImageUrl(imagen);
+  }
+
+  parseList(text: string | undefined): string[] {
+    if (!text) return [];
+    return text
+      .split('\n')
+      .map(line => line.replace(/^-\s*/, '').trim())
+      .filter(line => line.length > 0);
+  }
+
+  ceil(value: number | undefined): number {
+    return value ? Math.ceil(value) : 0;
+  }
+
+  getValoracion(key: keyof import('../../models/build.model').Valoraciones): number {
+    return this.build?.valoraciones?.[key] ?? 0;
+  }
+
+  getPartialFill(value: number): number {
+    return (value % 1) * 100;
+  }
+
+  openImageModal(): void {
+    if (this.build?.imagen) {
+      this.isImageModalOpen = true;
+    }
+  }
+
+  closeImageModal(): void {
+    this.isImageModalOpen = false;
+  }
+
+  toggleVersiones(): void {
+    this.isVersionesOpen = !this.isVersionesOpen;
   }
 }

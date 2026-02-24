@@ -1,0 +1,183 @@
+<div class="container">
+  <div class="page-header">
+    <h1 class="page-title">Crear Nueva Build</h1>
+    <p class="page-subtitle">Completa los datos de tu build de Path of Exile</p>
+  </div>
+
+  <form class="build-form" (ngSubmit)="onSubmit()">
+    
+    <!-- Imagen -->
+    <div class="form-card">
+      <h3 class="form-card-title"><i class="fas fa-image"></i> Imagen</h3>
+      
+      <div class="image-upload-section">
+        <div class="image-preview-area">
+          <div class="image-preview" *ngIf="imagePreview; else noImage">
+            <img [src]="imagePreview" alt="Preview" />
+          </div>
+          <ng-template #noImage>
+            <div class="no-image">
+              <i class="fas fa-image"></i>
+              <span>Sin imagen</span>
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="image-inputs">
+          <div class="input-group">
+            <label>Subir archivo</label>
+            <input type="file" accept="image/webp,image/png,image/jpeg" (change)="onFileSelected($event)" />
+          </div>
+
+          <div class="input-group">
+            <label>Desde URL</label>
+            <div class="url-input-row">
+              <input type="text" id="imageUrl" placeholder="https://..." />
+              <button type="button" class="btn-secondary" (click)="onUrlSubmit()">Cargar</button>
+            </div>
+          </div>
+
+          <div class="image-error" *ngIf="imageError">
+            <i class="fas fa-exclamation-triangle"></i> {{ imageError }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información básica -->
+    <div class="form-card">
+      <h3 class="form-card-title"><i class="fas fa-info-circle"></i> Información Básica</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nombre">Nombre *</label>
+          <input type="text" id="nombre" [(ngModel)]="build.nombre" name="nombre" required />
+        </div>
+      </div>
+
+      <div class="form-row two-cols">
+        <div class="form-group">
+          <label for="clase">Clase *</label>
+          <select id="clase" [(ngModel)]="build.clase" name="clase" required>
+            <option value="">Seleccionar clase</option>
+            <option *ngFor="let clase of clases" [value]="clase">{{ clase }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="ascendencia">Ascendencia *</label>
+          <input type="text" id="ascendencia" [(ngModel)]="build.ascendencia" name="ascendencia" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="autor">Autor *</label>
+          <input type="text" id="autor" [(ngModel)]="build.autor" name="autor" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" [(ngModel)]="build.descripcion" name="descripcion" rows="4"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Valoraciones -->
+    <div class="form-card">
+      <h3 class="form-card-title"><i class="fas fa-star-half-alt"></i> Valoraciones</h3>
+      
+      <div class="valoraciones-grid">
+        <div class="valoracion-field">
+          <label>Daño Boss: {{ build.valoraciones?.boss_dmg }}</label>
+          <input type="range" min="0" max="5" step="0.1" [(ngModel)]="build.valoraciones!.boss_dmg" name="boss_dmg" />
+        </div>
+        <div class="valoracion-field">
+          <label>Map Speed/Clear: {{ build.valoraciones?.map_speed_clear }}</label>
+          <input type="range" min="0" max="5" step="0.1" [(ngModel)]="build.valoraciones!.map_speed_clear" name="map_speed_clear" />
+        </div>
+        <div class="valoracion-field">
+          <label>Supervivencia: {{ build.valoraciones?.survivality }}</label>
+          <input type="range" min="0" max="5" step="0.1" [(ngModel)]="build.valoraciones!.survivality" name="survivality" />
+        </div>
+        <div class="valoracion-field">
+          <label>Dificultad: {{ build.valoraciones?.difficulty }}</label>
+          <input type="range" min="0" max="5" step="0.1" [(ngModel)]="build.valoraciones!.difficulty" name="difficulty" />
+        </div>
+        <div class="valoracion-field">
+          <label>Diversión: {{ build.valoraciones?.fun }}</label>
+          <input type="range" min="0" max="5" step="0.1" [(ngModel)]="build.valoraciones!.fun" name="fun" />
+        </div>
+        <div class="valoracion-field">
+          <label>Comodidad: {{ build.valoraciones?.comfort }}</label>
+          <input type="range" min="0" max="5" step="0.1" [(ngModel)]="build.valoraciones!.comfort" name="comfort" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Versiones -->
+    <div class="form-card">
+      <h3 class="form-card-title"><i class="fas fa-code-branch"></i> Versiones PoB</h3>
+      
+      <div class="versiones-input">
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" [(ngModel)]="nuevaVersion.name" name="versionName" placeholder="Fire Staff + Endurance Stack" />
+          </div>
+          <div class="form-group">
+            <label>URL PoB</label>
+            <input type="text" [(ngModel)]="nuevaVersion.pobb" name="versionPobb" placeholder="https://pobb.in/..." />
+          </div>
+        </div>
+        <button type="button" class="btn-secondary add-version-btn" (click)="addVersion()">
+          <i class="fas fa-plus"></i> Añadir versión
+        </button>
+      </div>
+
+      <div class="versiones-list" *ngIf="versiones && versiones.length > 0">
+        <div class="version-item" *ngFor="let v of versiones; let i = index">
+          <span>{{ v.name }}</span>
+          <a [href]="v.pobb" target="_blank">Ver PoB</a>
+          <button type="button" class="remove-btn" (click)="removeVersion(i)">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ventajas y Desventajas -->
+    <div class="form-card">
+      <h3 class="form-card-title"><i class="fas fa-thumbs-up"></i> Ventajas y Desventajas</h3>
+      
+      <div class="pros-cons-form">
+        <div class="form-group">
+          <label>Ventajas (una por línea, usa "- " al inicio)</label>
+          <textarea [(ngModel)]="build.ventajas" name="ventajas" rows="4" placeholder="- Clear pasivo&#10;- Muy tanky"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Desventajas (una por línea, usa "- " al inicio)</label>
+          <textarea [(ngModel)]="build.desventajas" name="desventajas" rows="4" placeholder="- Daño limitado&#10;- Gear específico"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="form-actions">
+      <button type="button" class="btn-back" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Atrás
+      </button>
+      <div class="action-right">
+        <label class="load-json-btn">
+          <i class="fas fa-file-upload"></i> Cargar JSON
+          <input type="file" accept=".json" (change)="loadFromJson($event)" hidden />
+        </label>
+        <button type="submit" class="btn-submit" [disabled]="isLoading">
+          <i class="fas fa-paper-plane"></i> {{ isLoading ? 'Enviando...' : 'Enviar' }}
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div>
