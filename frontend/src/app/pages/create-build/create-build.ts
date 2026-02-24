@@ -38,6 +38,8 @@ export class CreateBuild implements OnInit {
   imageError: string | null = null;
   isLoading = false;
   selectedFile: File | null = null;
+  isEditing = false;
+  buildId: string | null = null;
 
   clases = [
     'Marauder', 'Ranger', 'Witch', 'Shadow', 'Duelist', 'Templar', 'Scion', 'Ascendant'
@@ -53,14 +55,20 @@ export class CreateBuild implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras?.state as { build?: Build };
+    // Verificar si hay una build para editar
+    const buildToEdit = this.buildService.getBuildToEdit();
     
-    if (state?.build) {
-      this.build = { ...state.build };
+    if (buildToEdit) {
+      console.log('Build recibida para edición:', buildToEdit);
+      this.isEditing = true;
+      this.buildId = buildToEdit._id || null;
+      this.build = { ...buildToEdit };
+      this.versiones = buildToEdit.versiones || [];
       if (this.build.imagen) {
         this.imagePreview = this.buildService.getImageUrl(this.build.imagen);
       }
+      // Limpiar después de usar
+      this.buildService.clearBuildToEdit();
     }
   }
 
@@ -155,7 +163,9 @@ export class CreateBuild implements OnInit {
     
     this.uploadImage()
       .then(filename => {
-        this.build.imagen = filename || '';
+        if (filename) {
+          this.build.imagen = filename;
+        }
         
         const buildData = {
           nombre: this.build.nombre,
@@ -178,17 +188,31 @@ export class CreateBuild implements OnInit {
           }
         };
 
-        this.buildService.createBuild(buildData as Build).subscribe({
-          next: (created) => {
-            this.isLoading = false;
-            alert('Build creada correctamente');
-            this.router.navigate(['/build', created._id]);
-          },
-          error: (error) => {
-            this.isLoading = false;
-            alert('Error al crear la build: ' + error.message);
-          }
-        });
+        if (this.isEditing && this.buildId) {
+          this.buildService.updateBuild(this.buildId, buildData as Build).subscribe({
+            next: (updated) => {
+              this.isLoading = false;
+              alert('Build actualizada correctamente');
+              this.router.navigate(['/build', updated._id]);
+            },
+            error: (error) => {
+              this.isLoading = false;
+              alert('Error al actualizar la build: ' + error.message);
+            }
+          });
+        } else {
+          this.buildService.createBuild(buildData as Build).subscribe({
+            next: (created) => {
+              this.isLoading = false;
+              alert('Build creada correctamente');
+              this.router.navigate(['/build', created._id]);
+            },
+            error: (error) => {
+              this.isLoading = false;
+              alert('Error al crear la build: ' + error.message);
+            }
+          });
+        }
       })
       .catch(error => {
         this.isLoading = false;

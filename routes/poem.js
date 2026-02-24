@@ -66,4 +66,21 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.put('/:id', async (req, res) => {
+    try {
+        const build = await Build.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        );
+        if (!build) {
+            return res.status(404).json({ message: 'Build no encontrada' });
+        }
+        res.json(build);
+    } catch (error) {
+        console.error('Error al actualizar build:', error);
+        res.status(400).json({ message: error.message });
+    }
+});
+
 module.exports = router;

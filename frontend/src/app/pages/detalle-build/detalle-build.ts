@@ -54,7 +54,10 @@ export class DetalleBuild implements OnInit {
   }
 
   editBuild(): void {
-    this.router.navigate(['/create-build'], { state: { build: this.build } });
+    if (this.build) {
+      this.buildService.setBuildToEdit(this.build);
+      this.router.navigate(['/create-build']);
+    }
   }
 
   getStars(value: number): number[] {
