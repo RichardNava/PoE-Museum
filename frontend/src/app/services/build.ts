@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Build } from '../models/build.model';
 
@@ -11,8 +11,23 @@ export class BuildService {
   private apiUrl = 'http://localhost:3000/poem';
   private imageUrl = 'http://localhost:3000/images/';
   private buildsCache: Build[] = [];
+  
+  private buildToEditSubject = new BehaviorSubject<Build | null>(null);
+  buildToEdit$ = this.buildToEditSubject.asObservable();
 
   constructor(private http: HttpClient) {}
+
+  setBuildToEdit(build: Build | null): void {
+    this.buildToEditSubject.next(build);
+  }
+
+  getBuildToEdit(): Build | null {
+    return this.buildToEditSubject.getValue();
+  }
+
+  clearBuildToEdit(): void {
+    this.buildToEditSubject.next(null);
+  }
 
   getImageUrl(imagen: string): string {
     if (imagen && imagen.trim() !== '') {
@@ -39,5 +54,9 @@ export class BuildService {
 
   createBuild(build: Build): Observable<Build> {
     return this.http.post<Build>(`${this.apiUrl}`, build);
+  }
+
+  updateBuild(id: string, build: Build): Observable<Build> {
+    return this.http.put<Build>(`${this.apiUrl}/${id}`, build);
   }
 }
