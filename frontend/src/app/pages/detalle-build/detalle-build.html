@@ -185,7 +185,7 @@
       <button class="btn btn-volver" (click)="goBack()">
         <i class="fas fa-arrow-left"></i> Volver
       </button>
-      <button class="btn btn-editar" (click)="editBuild()">
+      <button class="btn btn-editar" (click)="editBuild()" *ngIf="canEdit()">
         <i class="fas fa-edit"></i> Editar
       </button>
     </div>

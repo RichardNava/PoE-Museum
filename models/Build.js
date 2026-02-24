@@ -17,6 +17,7 @@ const versionSchema = new mongoose.Schema({
 const buildSchema = new mongoose.Schema({
     nombre: { type: String, required: true },
     autor: { type: String, required: true },
+    usuario_id: { type: String, required: true },
     clase: { type: String, required: true },
     ascendencia: { type: String, required: true },
     descripcion: { type: String, required: true },

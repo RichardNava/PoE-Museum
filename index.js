@@ -137,6 +137,7 @@ app.get('/api/builds/mock', (req, res) => {
 });
 
 app.use('/poem', require('./routes/poem'));
+app.use('/auth', require('./routes/auth'));
 
 // Error handling middleware
 app.use((error, req, res, next) => {
