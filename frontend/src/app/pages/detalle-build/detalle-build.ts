@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { BuildService } from '../../services/build';
+import { AuthService } from '../../services/auth';
 import { Build, Valoraciones } from '../../models/build.model';
 
 @Component({
@@ -14,19 +15,23 @@ export class DetalleBuild implements OnInit {
   build: Build | null = null;
   isImageModalOpen = false;
   isVersionesOpen = false;
+  currentUserName: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private location: Location,
     private buildService: BuildService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    this.currentUserName = user?.nombre || null;
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      // Primero buscar en caché
       const cachedBuilds = this.buildService.getBuildsFromCache();
       const cached = cachedBuilds.find(b => b._id === id);
       
@@ -34,7 +39,6 @@ export class DetalleBuild implements OnInit {
         this.build = cached;
         this.cdr.detectChanges();
       } else {
-        // Si no está en caché, hacer petición
         this.buildService.getBuildById(id).subscribe({
           next: (build) => {
             this.build = build;
@@ -54,10 +58,24 @@ export class DetalleBuild implements OnInit {
   }
 
   editBuild(): void {
-    if (this.build) {
-      this.buildService.setBuildToEdit(this.build);
-      this.router.navigate(['/create-build']);
+    if (!this.currentUserName) {
+      this.router.navigate(['/login']);
+      return;
     }
+
+    if (this.build) {
+      if (this.build.autor === this.currentUserName) {
+        this.buildService.setBuildToEdit(this.build);
+        this.router.navigate(['/create-build']);
+      } else {
+        this.router.navigate(['/login']);
+      }
+    }
+  }
+
+  canEdit(): boolean {
+    if (!this.currentUserName || !this.build) return false;
+    return this.build.autor === this.currentUserName;
   }
 
   getStars(value: number): number[] {

@@ -234,3 +234,26 @@
     display: none;
   }
 }
+
+.user-icon.logged-in {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.user-greeting {
+  display: block;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nav-item-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav-item-disabled .nav-link.disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  pointer-events: none;
+}

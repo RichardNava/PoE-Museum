@@ -83,4 +83,13 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const builds = await Build.find({ usuario_id: req.params.userId });
+        res.json(builds);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

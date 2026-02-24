@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { BuildService } from '../../services/build';
+import { AuthService } from '../../services/auth';
 import { Build } from '../../models/build.model';
 import { HttpClient } from '@angular/common/http';
 
@@ -51,10 +52,13 @@ export class CreateBuild implements OnInit {
     private router: Router,
     private location: Location,
     private buildService: BuildService,
+    private authService: AuthService,
     private http: HttpClient
   ) {}
 
   ngOnInit(): void {
+    const currentUser = this.authService.getCurrentUser();
+    
     // Verificar si hay una build para editar
     const buildToEdit = this.buildService.getBuildToEdit();
     
@@ -69,6 +73,10 @@ export class CreateBuild implements OnInit {
       }
       // Limpiar después de usar
       this.buildService.clearBuildToEdit();
+    } else if (currentUser) {
+      // Inicializar autor con el nombre del usuario actual
+      this.build.autor = currentUser.nombre;
+      this.build.usuario_id = currentUser._id;
     }
   }
 
@@ -172,6 +180,7 @@ export class CreateBuild implements OnInit {
           clase: this.build.clase,
           ascendencia: this.build.ascendencia,
           autor: this.build.autor,
+          usuario_id: this.build.usuario_id,
           descripcion: this.build.descripcion,
           ventajas: this.build.ventajas,
           desventajas: this.build.desventajas,

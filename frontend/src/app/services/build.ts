@@ -59,4 +59,8 @@ export class BuildService {
   updateBuild(id: string, build: Build): Observable<Build> {
     return this.http.put<Build>(`${this.apiUrl}/${id}`, build);
   }
+
+  getBuildsByUser(userId: string): Observable<Build[]> {
+    return this.http.get<Build[]>(`${this.apiUrl}/user/${userId}`);
+  }
 }

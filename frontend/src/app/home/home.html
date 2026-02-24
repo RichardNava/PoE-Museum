@@ -1,7 +1,8 @@
 <div class="container">
   <div class="page-header">
-    <h1 class="page-title">Galería de Builds</h1>
-    <p class="page-subtitle">Explora las mejores builds de Path of Exile</p>
+    <h1 class="page-title">{{ pageTitle }}</h1>
+    <p class="page-subtitle" *ngIf="!isMyBuilds">Explora las mejores builds de Path of Exile</p>
+    <p class="page-subtitle" *ngIf="isMyBuilds">Las builds que has creado</p>
   </div>
   
   <div class="builds-grid" *ngIf="builds.length > 0; else emptyState">
@@ -40,8 +41,13 @@
   <ng-template #emptyState>
     <div class="empty-state">
       <i class="fas fa-folder-open"></i>
-      <h3>No hay builds disponibles</h3>
-      <p>¡Sé el primero en crear una build!</p>
+      <h3 *ngIf="!isMyBuilds">No hay builds disponibles</h3>
+      <h3 *ngIf="isMyBuilds">No tienes builds creadas</h3>
+      <p *ngIf="!isMyBuilds">¡Sé el primero en crear una build!</p>
+      <p *ngIf="isMyBuilds">¡Crea tu primera build!</p>
+      <a routerLink="/create-build" *ngIf="isMyBuilds" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Crear Build
+      </a>
     </div>
   </ng-template>
 </div>
