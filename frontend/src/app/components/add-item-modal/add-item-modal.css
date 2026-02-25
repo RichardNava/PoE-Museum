@@ -1,0 +1,200 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  animation: fadeIn 0.2s ease;
+  padding: 2rem;
+}
+
+.modal-content {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideInUp 0.3s ease;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color var(--transition-fast);
+}
+
+.close-btn:hover {
+  color: var(--color-accent-primary);
+}
+
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.instructions {
+  margin-bottom: 1rem;
+}
+
+.instructions p {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.input-section {
+  margin-bottom: 1.5rem;
+}
+
+.input-section textarea {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.8rem;
+  resize: vertical;
+  transition: border-color var(--transition-fast);
+}
+
+.input-section textarea:focus {
+  outline: none;
+  border-color: var(--color-accent-primary);
+}
+
+.input-section textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.paste-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.paste-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--color-accent-primary);
+  color: var(--color-accent-primary);
+}
+
+.preview-section h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.preview-content {
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: 0.75rem;
+}
+
+.error-message {
+  color: #ff4444;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  background: rgba(255, 68, 68, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.btn-cancel {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-text-primary);
+}
+
+.btn-add {
+  background: linear-gradient(135deg, var(--color-accent-primary), #00a8cc);
+  color: #000000;
+}
+
+.btn-add:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(18, 201, 255, 0.3);
+}
+
+.btn-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

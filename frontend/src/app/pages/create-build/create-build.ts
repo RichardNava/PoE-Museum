@@ -35,12 +35,15 @@ export class CreateBuild implements OnInit {
 
   versiones: { name: string; pobb: string }[] = [];
   nuevaVersion = { name: '', pobb: '' };
+  items_mandatory: string[] = [];
   imagePreview: string | null = null;
   imageError: string | null = null;
   isLoading = false;
   selectedFile: File | null = null;
   isEditing = false;
   buildId: string | null = null;
+  isItemModalOpen = false;
+  maxItems = 8;
 
   clases = [
     'Marauder', 'Ranger', 'Witch', 'Shadow', 'Duelist', 'Templar', 'Scion', 'Ascendant'
@@ -59,7 +62,6 @@ export class CreateBuild implements OnInit {
   ngOnInit(): void {
     const currentUser = this.authService.getCurrentUser();
     
-    // Verificar si hay una build para editar
     const buildToEdit = this.buildService.getBuildToEdit();
     
     if (buildToEdit) {
@@ -68,16 +70,38 @@ export class CreateBuild implements OnInit {
       this.buildId = buildToEdit._id || null;
       this.build = { ...buildToEdit };
       this.versiones = buildToEdit.versiones || [];
+      this.items_mandatory = buildToEdit.items_mandatory || [];
       if (this.build.imagen) {
         this.imagePreview = this.buildService.getImageUrl(this.build.imagen);
       }
-      // Limpiar después de usar
       this.buildService.clearBuildToEdit();
     } else if (currentUser) {
-      // Inicializar autor con el nombre del usuario actual
       this.build.autor = currentUser.nombre;
       this.build.usuario_id = currentUser._id;
     }
+  }
+
+  openItemModal(): void {
+    this.isItemModalOpen = true;
+  }
+
+  closeItemModal(): void {
+    this.isItemModalOpen = false;
+  }
+
+  addItem(itemText: string): void {
+    if (this.items_mandatory.length < this.maxItems) {
+      this.items_mandatory.push(itemText);
+    }
+    this.closeItemModal();
+  }
+
+  removeItem(index: number): void {
+    this.items_mandatory.splice(index, 1);
+  }
+
+  get canAddMoreItems(): boolean {
+    return this.items_mandatory.length < this.maxItems;
   }
 
   onFileSelected(event: Event): void {
@@ -187,6 +211,7 @@ export class CreateBuild implements OnInit {
           imagen: this.build.imagen,
           imagen_mime: this.build.imagen_mime,
           versiones: this.versiones,
+          items_mandatory: this.items_mandatory,
           valoraciones: {
             boss_dmg: Number(this.build.valoraciones?.boss_dmg) || 0,
             comfort: Number(this.build.valoraciones?.comfort) || 0,
