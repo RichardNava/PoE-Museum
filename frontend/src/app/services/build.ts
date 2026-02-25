@@ -15,7 +15,18 @@ export class BuildService {
   private buildToEditSubject = new BehaviorSubject<Build | null>(null);
   buildToEdit$ = this.buildToEditSubject.asObservable();
 
+  private searchTermSubject = new BehaviorSubject<string>('');
+  searchTerm$ = this.searchTermSubject.asObservable();
+
   constructor(private http: HttpClient) {}
+
+  setSearchTerm(term: string): void {
+    this.searchTermSubject.next(term);
+  }
+
+  getSearchTerm(): string {
+    return this.searchTermSubject.getValue();
+  }
 
   setBuildToEdit(build: Build | null): void {
     this.buildToEditSubject.next(build);

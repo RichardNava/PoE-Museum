@@ -23,7 +23,12 @@
   <div class="navbar-right">
     <div class="search-box">
       <i class="fas fa-search"></i>
-      <input type="text" placeholder="Buscar builds..." />
+      <input 
+        type="text" 
+        placeholder="Buscar builds..." 
+        [(ngModel)]="searchTerm"
+        (keyup.enter)="onSearch()"
+      />
     </div>
     
     <div class="user-menu">
