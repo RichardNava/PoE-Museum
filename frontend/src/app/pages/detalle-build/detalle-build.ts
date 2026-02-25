@@ -16,6 +16,7 @@ export class DetalleBuild implements OnInit {
   isImageModalOpen = false;
   isVersionesOpen = false;
   currentUserName: string | null = null;
+  selectedVersionIndex = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -51,6 +52,26 @@ export class DetalleBuild implements OnInit {
         });
       }
     }
+  }
+
+  get hasVersions(): boolean {
+    return !!(this.build?.versiones && this.build.versiones.length > 0);
+  }
+
+  get hasItemsMandatory(): boolean {
+    return !!(this.build?.items_mandatory && this.build.items_mandatory.length > 0);
+  }
+
+  get currentVersion(): { name: string; pobb: string } | null {
+    if (!this.build?.versiones || this.build.versiones.length === 0) {
+      return null;
+    }
+    return this.build.versiones[this.selectedVersionIndex];
+  }
+
+  selectVersion(index: number): void {
+    this.selectedVersionIndex = index;
+    this.cdr.detectChanges();
   }
 
   goBack(): void {

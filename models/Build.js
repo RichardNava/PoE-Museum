@@ -27,6 +27,7 @@ const buildSchema = new mongoose.Schema({
     imagen_mime: { type: String, default: '' },
     valoraciones: { type: valoracionSchema, required: true },
     versiones: [versionSchema],
+    items_mandatory: [{ type: String }],
     fecha_creacion: { type: Date, default: Date.now }
 }, {
     collection: 'builds',

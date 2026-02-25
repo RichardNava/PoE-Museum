@@ -147,6 +147,36 @@
       </div>
     </div>
 
+    <!-- Items Mandatory -->
+    <div class="form-card">
+      <h3 class="form-card-title"><i class="fas fa-cubes"></i> Items Mandatory</h3>
+      <p class="form-card-description">Añade los items esenciales para esta build (copiados del juego con Ctrl+Alt+C)</p>
+      
+      <div class="items-mandatory-section">
+        <button 
+          type="button" 
+          class="btn-secondary add-item-btn" 
+          (click)="openItemModal()"
+          [disabled]="!canAddMoreItems">
+          <i class="fas fa-plus"></i> Añadir Item ({{ items_mandatory.length }}/{{ maxItems }})
+        </button>
+
+        <div class="items-list" *ngIf="items_mandatory && items_mandatory.length > 0">
+          <div class="item-entry" *ngFor="let item of items_mandatory; let i = index">
+            <app-poe-item [itemText]="item"></app-poe-item>
+            <button type="button" class="remove-item-btn" (click)="removeItem(i)">
+              <i class="fas fa-times"></i> Eliminar
+            </button>
+          </div>
+        </div>
+
+        <div class="no-items" *ngIf="!items_mandatory || items_mandatory.length === 0">
+          <i class="fas fa-box-open"></i>
+          <span>No hay items añadidos</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Ventajas y Desventajas -->
     <div class="form-card">
       <h3 class="form-card-title"><i class="fas fa-thumbs-up"></i> Ventajas y Desventajas</h3>
@@ -181,4 +211,10 @@
     </div>
 
   </form>
+
+  <app-add-item-modal 
+    [isOpen]="isItemModalOpen" 
+    (close)="closeItemModal()"
+    (addItem)="addItem($event)">
+  </app-add-item-modal>
 </div>

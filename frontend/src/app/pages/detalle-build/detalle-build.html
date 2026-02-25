@@ -124,20 +124,22 @@
           </div>
         </div>
 
-        <!-- Versiones -->
-        <div class="card versiones-card" [class.versiones-expanded]="isVersionesOpen" *ngIf="build.versiones && build.versiones.length > 0">
+        <!-- Versiones PoB -->
+        <div class="card versiones-card" [class.versiones-expanded]="isVersionesOpen" *ngIf="hasVersions">
           <div class="card-title versions-title" (click)="toggleVersiones()">
             <div class="title-content"><i class="fas fa-code-branch"></i> Versiones PoB</div>
             <i class="fas fa-chevron-down version-chevron"></i>
           </div>
+          
+          <!-- Lista de versiones -->
           <div class="versiones-container">
             <div class="version-item">
               <i class="fas fa-link"></i>
-              <a [href]="build.versiones[0].pobb" target="_blank" rel="noopener">{{ build.versiones[0].name }}</a>
+              <a [href]="currentVersion?.pobb" target="_blank" rel="noopener">{{ currentVersion?.name }}</a>
               <i class="fas fa-external-link-alt external-icon"></i>
             </div>
             <div class="versiones-dropdown" *ngIf="isVersionesOpen && build.versiones.length > 1">
-              <div class="version-item" *ngFor="let version of build.versiones.slice(1)">
+              <div class="version-item" *ngFor="let version of build.versiones.slice(1); let i = index" (click)="selectVersion(i + 1)">
                 <i class="fas fa-link"></i>
                 <a [href]="version.pobb" target="_blank" rel="noopener">{{ version.name }}</a>
                 <i class="fas fa-external-link-alt external-icon"></i>
@@ -177,6 +179,19 @@
             </li>
           </ul>
         </div>
+      </div>
+    </div>
+
+    <!-- Items Mandatory -->
+    <div class="items-mandatory-section" *ngIf="hasItemsMandatory">
+      <div class="section-title">
+        <i class="fas fa-cubes"></i> Items Mandatory
+      </div>
+      <div class="items-grid">
+        <app-poe-item 
+          *ngFor="let item of build.items_mandatory" 
+          [itemText]="item">
+        </app-poe-item>
       </div>
     </div>
 

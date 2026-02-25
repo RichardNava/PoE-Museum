@@ -16,6 +16,8 @@ import { LoginComponent } from './pages/login/login';
 import { RegisterComponent } from './pages/register/register';
 import { ProfileComponent } from './pages/profile/profile';
 import { IsLoggedInDirective } from './directives/is-logged-in.directive';
+import { PoeItemComponent } from './components/poe-item/poe-item';
+import { AddItemModalComponent } from './components/add-item-modal/add-item-modal';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { IsLoggedInDirective } from './directives/is-logged-in.directive';
     CreateBuild,
     LoginComponent,
     RegisterComponent,
-    ProfileComponent
+    ProfileComponent,
+    PoeItemComponent,
+    AddItemModalComponent
   ],
   imports: [
     BrowserModule,
