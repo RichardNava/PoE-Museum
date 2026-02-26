@@ -72,7 +72,7 @@ export class CreateBuild implements OnInit {
       this.versiones = buildToEdit.versiones || [];
       this.items_mandatory = buildToEdit.items_mandatory || [];
       if (this.build.imagen) {
-        this.imagePreview = this.buildService.getImageUrl(this.build.imagen);
+        this.imagePreview = this.buildService.getImageUrl(this.build.imagen, this.build.imagen_mime);
       }
       this.buildService.clearBuildToEdit();
     } else if (currentUser) {
@@ -116,23 +116,17 @@ export class CreateBuild implements OnInit {
     const urlInput = (document.getElementById('imageUrl') as HTMLInputElement).value;
     if (!urlInput) return;
 
-    this.isLoading = true;
-    fetch(urlInput)
-      .then(response => {
-        if (!response.ok) throw new Error('No se pudo obtener la imagen');
-        return response.blob();
-      })
-      .then(blob => {
-        const extension = blob.type.split('/')[1];
-        const fileName = `url-image-${Date.now()}.${extension}`;
-        const file = new File([blob], fileName, { type: blob.type });
-        this.processImage(file);
-        this.isLoading = false;
-      })
-      .catch(error => {
-        this.imageError = 'Error al cargar la imagen: ' + error.message;
-        this.isLoading = false;
-      });
+    // Validate URL format
+    if (!urlInput.startsWith('http://') && !urlInput.startsWith('https://')) {
+      this.imageError = 'URL inválida. Debe comenzar con http:// o https://';
+      return;
+    }
+
+    // Store the URL directly
+    this.build.imagen = urlInput;
+    this.build.imagen_mime = 'image/uri';
+    this.imagePreview = urlInput;
+    this.imageError = null;
   }
 
   private processImage(file: File): void {

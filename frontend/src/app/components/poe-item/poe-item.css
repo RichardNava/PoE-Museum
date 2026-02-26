@@ -2,11 +2,252 @@
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   border: 2px solid #444;
   border-radius: 4px;
-  padding: 12px;
   font-family: 'Consolas', 'Monaco', monospace;
   font-size: 12px;
   line-height: 1.4;
   color: #d4d4d4;
+}
+
+/* Imagen del item */
+.item-image {
+  float: right;
+  margin-left: 12px;
+  margin-bottom: 8px;
+}
+
+.item-image img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.image-loading {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  font-size: 10px;
+  color: #888;
+}
+
+/* Compact card styles - NEW DESIGN */
+.poe-item-wrapper {
+  display: block;
+  width: 100%;
+}
+
+.compact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 16px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  height: 100%;
+}
+
+.compact-card:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+.compact-image {
+  flex-shrink: 0;
+}
+
+.compact-image img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px;
+}
+
+.compact-loading {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  color: #888;
+}
+
+.compact-placeholder {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  color: #555;
+}
+
+.compact-placeholder i {
+  font-size: 48px;
+}
+
+.compact-name {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  text-align: center;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+/* Tooltip styles for compact mode */
+.poe-item-wrapper {
+  position: relative;
+}
+
+.item-tooltip {
+  display: none;
+  position: absolute;
+  z-index: 1000;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 100%;
+  margin-bottom: 12px;
+}
+
+.poe-item.compact:hover .item-tooltip {
+  display: block;
+}
+
+/* Tooltip arrow - now pointing down */
+.item-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #1a1a2e;
+}
+
+.tooltip-content {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #444;
+  border-radius: 8px;
+  padding: 18px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #d4d4d4;
+  min-width: 380px;
+  max-width: 450px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+/* Tooltip content styles */
+.tooltip-image {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.tooltip-image img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.tooltip-header {
+  font-weight: bold;
+  font-size: 18px;
+  color: #fff;
+  margin-bottom: 8px;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.tooltip-info {
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 10px;
+}
+
+.tooltip-stats {
+  margin-bottom: 6px;
+}
+
+.tooltip-stats .stat {
+  display: block;
+  color: #bbb;
+  margin-bottom: 2px;
+}
+
+.tooltip-req,
+.tooltip-sockets,
+.tooltip-ilvl {
+  color: #999;
+  margin-bottom: 6px;
+}
+
+.tooltip-sockets {
+  color: #18e5a3;
+}
+
+.tooltip-section {
+  margin-top: 10px;
+}
+
+.tooltip-section .section-label {
+  font-weight: bold;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.tooltip-section.enchantments .section-label {
+  color: #66ccff;
+}
+
+.tooltip-section.implicits .section-label {
+  color: #ffd700;
+}
+
+.tooltip-section .section-content {
+  color: #ccc;
+  margin-left: 14px;
+  margin-bottom: 3px;
+}
+
+.tooltip-section.enchantments .section-content {
+  color: #66ccff;
+}
+
+.tooltip-section.implicits .section-content {
+  color: #ffd700;
+}
+
+.tooltip-influence {
+  color: #aa6ccc;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+.tooltip-corrupted {
+  color: #ff3333;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 .poe-item.unique {

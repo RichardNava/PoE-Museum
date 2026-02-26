@@ -463,6 +463,21 @@
   font-size: 0.875rem;
 }
 
+.btn-eliminar {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.btn-eliminar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.btn-eliminar i {
+  font-size: 0.875rem;
+}
+
 .loading {
   display: flex;
   flex-direction: column;
@@ -604,6 +619,7 @@
 
 .items-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1rem;
+  align-items: stretch;
 }

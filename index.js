@@ -4,6 +4,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
 const connectDB = require('./config/db');
 
 const app = express();
@@ -77,6 +78,125 @@ app.get('/test', (req, res) => {
     console.log('Endpoint de prueba alcanzado');
     res.json({ message: 'Test endpoint working', timestamp: new Date() });
 });
+
+// Proxy endpoint para PoE Wiki
+app.get('/api/poe-wiki/image', async (req, res) => {
+    const { title, isUnique } = req.query;
+    if (!title) {
+        return res.status(400).json({ error: 'Title is required' });
+    }
+
+    const unique = isUnique === 'true';
+    console.log(`[Proxy] Buscando imagen para: ${title}, Unique: ${unique}`);
+
+    // First, get the images for the page
+    const apiUrl = `https://www.poewiki.net/api.php?action=query&titles=${encodeURIComponent(title)}&prop=images&format=json`;
+    console.log(`[Proxy] Request URL: ${apiUrl}`);
+    
+    https.get(apiUrl, (apiRes) => {
+        let data = '';
+        
+        apiRes.on('data', (chunk) => {
+            data += chunk;
+        });
+        
+        apiRes.on('end', () => {
+            try {
+                const response = JSON.parse(data);
+                const pages = response?.query?.pages;
+                
+                if (!pages) {
+                    return res.json({ imageUrl: null });
+                }
+
+                for (const pageId in pages) {
+                    const page = pages[pageId];
+                    const itemTitle = page.title;
+                    
+                    if (!page.images) continue;
+
+                    // Escape special regex characters
+                    const escapedTitle = itemTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    
+                    // First priority: "inventory icon" (exact match preferred)
+                    const invIconRegex = new RegExp(
+                        `File:${escapedTitle}.*inventory icon\\.png$`, 
+                        'i'
+                    );
+
+                    let foundImage = page.images.find(img => 
+                        img.title && invIconRegex.test(img.title)
+                    );
+
+                    // Second priority: "3D" if no inventory icon found
+                    if (!foundImage) {
+                        const d3Regex = new RegExp(
+                            `File:${escapedTitle}.*3D\\.png$`, 
+                            'i'
+                        );
+                        foundImage = page.images.find(img => 
+                            img.title && d3Regex.test(img.title)
+                        );
+                    }
+
+                    if (foundImage) {
+                        console.log(`[Proxy] Imagen encontrada: ${foundImage.title}`);
+                        getImageInfo(foundImage.title, (imageUrl) => {
+                            return res.json({ imageUrl });
+                        });
+                        return;
+                    }
+
+                    console.log(`[Proxy] No se encontró imagen para ${itemTitle}`);
+                    return res.json({ imageUrl: null });
+                }
+                
+                return res.json({ imageUrl: null });
+            } catch (e) {
+                console.error('[Proxy] Error parsing response:', e);
+                return res.status(500).json({ error: 'Failed to parse response' });
+            }
+        });
+    }).on('error', (e) => {
+        console.error('[Proxy] Error making request:', e);
+        res.status(500).json({ error: e.message });
+    });
+});
+
+function getImageInfo(imageName, callback) {
+    const apiUrl = `https://www.poewiki.net/api.php?action=query&titles=${encodeURIComponent(imageName)}&prop=imageinfo&iiprop=url&format=json`;
+    
+    https.get(apiUrl, (apiRes) => {
+        let data = '';
+        
+        apiRes.on('data', (chunk) => {
+            data += chunk;
+        });
+        
+        apiRes.on('end', () => {
+            try {
+                const response = JSON.parse(data);
+                const pages = response?.query?.pages;
+                
+                for (const pageId in pages) {
+                    const page = pages[pageId];
+                    if (page.imageinfo && page.imageinfo[0]) {
+                        const url = page.imageinfo[0].url;
+                        callback(url);
+                        return;
+                    }
+                }
+                callback(null);
+            } catch (e) {
+                console.error('[Proxy] Error getting image info:', e);
+                callback(null);
+            }
+        });
+    }).on('error', (e) => {
+        console.error('[Proxy] Error getting image info:', e);
+        callback(null);
+    });
+}
 
 // Endpoint alternativo sin Mongoose model
 app.get('/api/builds', async (req, res) => {

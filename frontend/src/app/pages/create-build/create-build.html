@@ -78,7 +78,10 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label for="descripcion">Descripción</label>
+          <label for="descripcion">
+            Descripción 
+            <span class="help-tooltip" title="Puedes usar {texto} para crear enlaces a PoE Wiki. Ejemplo: {Life} creará un enlace a la página de Life.">?</span>
+          </label>
           <textarea id="descripcion" [(ngModel)]="build.descripcion" name="descripcion" rows="4"></textarea>
         </div>
       </div>
@@ -163,7 +166,7 @@
 
         <div class="items-list" *ngIf="items_mandatory && items_mandatory.length > 0">
           <div class="item-entry" *ngFor="let item of items_mandatory; let i = index">
-            <app-poe-item [itemText]="item"></app-poe-item>
+            <app-poe-item [itemText]="item" [compact]="true"></app-poe-item>
             <button type="button" class="remove-item-btn" (click)="removeItem(i)">
               <i class="fas fa-times"></i> Eliminar
             </button>

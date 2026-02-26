@@ -8,7 +8,7 @@
         <div class="card imagen-card" (click)="openImageModal()" style="cursor: pointer;">
           <div class="card-title"><i class="fas fa-image"></i> Imagen</div>
           <div class="image-container" *ngIf="build.imagen; else noImage">
-            <img [src]="getImageUrl(build.imagen)" [alt]="build.nombre" />
+            <img [src]="getImageUrl(build.imagen, build.imagen_mime)" [alt]="build.nombre" />
           </div>
           <ng-template #noImage>
             <div class="image-container">
@@ -155,7 +155,7 @@
       <!-- Descripción -->
       <div class="card description-card">
         <div class="card-title"><i class="fas fa-align-left"></i> Descripción</div>
-        <div class="card-content">{{ build.descripcion }}</div>
+        <div class="card-content" [innerHTML]="build.descripcion | wikiLink"></div>
       </div>
 
       <!-- Ventajas y Desventajas en la misma fila -->
@@ -190,7 +190,8 @@
       <div class="items-grid">
         <app-poe-item 
           *ngFor="let item of build.items_mandatory" 
-          [itemText]="item">
+          [itemText]="item"
+          [compact]="true">
         </app-poe-item>
       </div>
     </div>
@@ -203,6 +204,9 @@
       <button class="btn btn-editar" (click)="editBuild()" *ngIf="canEdit()">
         <i class="fas fa-edit"></i> Editar
       </button>
+      <button class="btn btn-eliminar" (click)="deleteBuild()" *ngIf="canEdit()">
+        <i class="fas fa-trash"></i> Eliminar
+      </button>
     </div>
 
   </div>
@@ -214,7 +218,7 @@
     <button class="modal-close" (click)="closeImageModal()">
       <i class="fas fa-times"></i>
     </button>
-    <img [src]="build ? getImageUrl(build.imagen) : ''" [alt]="build?.nombre" />
+    <img [src]="build ? getImageUrl(build.imagen, build.imagen_mime) : ''" [alt]="build?.nombre" />
   </div>
 </div>
 

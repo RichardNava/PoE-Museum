@@ -8,7 +8,7 @@
   <div class="builds-grid" *ngIf="builds.length > 0; else emptyState">
     <div class="build-card" *ngFor="let build of builds; let i = index" (click)="viewBuild(build._id)">
       <div class="card-image">
-        <img *ngIf="build.imagen" [src]="getImageUrl(build.imagen)" [alt]="build.nombre" />
+        <img *ngIf="build.imagen" [src]="getImageUrl(build.imagen, build.imagen_mime)" [alt]="build.nombre" />
         <div *ngIf="!build.imagen" class="card-placeholder">
           <i class="fas fa-shield-alt"></i>
           <span>Sin imagen</span>

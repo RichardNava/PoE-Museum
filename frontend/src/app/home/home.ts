@@ -89,7 +89,7 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/build', id]);
   }
 
-  getImageUrl(imagen: string): string {
-    return this.buildService.getImageUrl(imagen);
+  getImageUrl(imagen: string, imagenMime: string = ''): string {
+    return this.buildService.getImageUrl(imagen, imagenMime);
   }
 }

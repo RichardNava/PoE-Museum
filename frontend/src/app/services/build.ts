@@ -40,11 +40,18 @@ export class BuildService {
     this.buildToEditSubject.next(null);
   }
 
-  getImageUrl(imagen: string): string {
-    if (imagen && imagen.trim() !== '') {
-      return this.imageUrl + imagen;
+  getImageUrl(imagen: string, imagenMime: string = ''): string {
+    if (!imagen || imagen.trim() === '') {
+      return 'https://placehold.co/300x200/12C9FF/000000?text=No+Image';
     }
-    return 'https://placehold.co/300x200/12C9FF/000000?text=No+Image';
+    
+    // If imagen_mime is "image/uri", treat imagen as a full URL
+    if (imagenMime === 'image/uri') {
+      return imagen;
+    }
+    
+    // Otherwise, use local assets
+    return this.imageUrl + imagen;
   }
 
   getAllBuilds(): Observable<Build[]> {
@@ -69,6 +76,10 @@ export class BuildService {
 
   updateBuild(id: string, build: Build): Observable<Build> {
     return this.http.put<Build>(`${this.apiUrl}/${id}`, build);
+  }
+
+  deleteBuild(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
   getBuildsByUser(userId: string): Observable<Build[]> {
