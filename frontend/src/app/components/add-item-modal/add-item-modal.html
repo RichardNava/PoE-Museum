@@ -1,0 +1,48 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Añadir Item Mandatory</h2>
+      <button class="close-btn" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="instructions">
+        <p>Pega el texto de un item copiado del juego</p>
+        <p class="hint">Usa <strong>Ctrl+Alt+C</strong> o <strong>Ctrl+C</strong> en el juego</p>
+      </div>
+
+      <div class="input-section">
+        <textarea 
+          [(ngModel)]="itemText"
+          placeholder="Item Class: Wands&#10;Rarity: Rare&#10;Dusk Barb&#10;----&#10;Wand..."
+          rows="10">
+        </textarea>
+        
+        <button class="paste-btn" (click)="pasteFromClipboard()">
+          <i class="fas fa-paste"></i> Pegar del portapapeles
+        </button>
+      </div>
+
+      <div class="preview-section" *ngIf="itemText">
+        <h3>Vista previa</h3>
+        <div class="preview-content">
+          <app-poe-item [itemText]="itemText"></app-poe-item>
+        </div>
+        <div class="error-message" *ngIf="!isValidItem()">
+          Formato de item no reconocido. Asegúrate de copiar el item desde el juego.
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-cancel" (click)="onClose()">
+        Cancelar
+      </button>
+      <button class="btn btn-add" (click)="onAdd()" [disabled]="!itemText.trim() || !isValidItem()">
+        <i class="fas fa-plus"></i> Añadir Item
+      </button>
+    </div>
+  </div>
+</div>

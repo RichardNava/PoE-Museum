@@ -26,4 +26,6 @@ export interface Build {
   valoraciones: Valoraciones;
   ventajas: string;
   versiones: Version[];
+  items_mandatory?: string[];
+  usuario_id?: string;
 }

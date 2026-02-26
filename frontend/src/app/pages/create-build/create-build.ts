@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { BuildService } from '../../services/build';
+import { AuthService } from '../../services/auth';
 import { Build } from '../../models/build.model';
 import { HttpClient } from '@angular/common/http';
 
@@ -34,10 +35,15 @@ export class CreateBuild implements OnInit {
 
   versiones: { name: string; pobb: string }[] = [];
   nuevaVersion = { name: '', pobb: '' };
+  items_mandatory: string[] = [];
   imagePreview: string | null = null;
   imageError: string | null = null;
   isLoading = false;
   selectedFile: File | null = null;
+  isEditing = false;
+  buildId: string | null = null;
+  isItemModalOpen = false;
+  maxItems = 8;
 
   clases = [
     'Marauder', 'Ranger', 'Witch', 'Shadow', 'Duelist', 'Templar', 'Scion', 'Ascendant'
@@ -49,19 +55,53 @@ export class CreateBuild implements OnInit {
     private router: Router,
     private location: Location,
     private buildService: BuildService,
+    private authService: AuthService,
     private http: HttpClient
   ) {}
 
   ngOnInit(): void {
-    const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras?.state as { build?: Build };
+    const currentUser = this.authService.getCurrentUser();
     
-    if (state?.build) {
-      this.build = { ...state.build };
+    const buildToEdit = this.buildService.getBuildToEdit();
+    
+    if (buildToEdit) {
+      console.log('Build recibida para edición:', buildToEdit);
+      this.isEditing = true;
+      this.buildId = buildToEdit._id || null;
+      this.build = { ...buildToEdit };
+      this.versiones = buildToEdit.versiones || [];
+      this.items_mandatory = buildToEdit.items_mandatory || [];
       if (this.build.imagen) {
-        this.imagePreview = this.buildService.getImageUrl(this.build.imagen);
+        this.imagePreview = this.buildService.getImageUrl(this.build.imagen, this.build.imagen_mime);
       }
+      this.buildService.clearBuildToEdit();
+    } else if (currentUser) {
+      this.build.autor = currentUser.nombre;
+      this.build.usuario_id = currentUser._id;
     }
+  }
+
+  openItemModal(): void {
+    this.isItemModalOpen = true;
+  }
+
+  closeItemModal(): void {
+    this.isItemModalOpen = false;
+  }
+
+  addItem(itemText: string): void {
+    if (this.items_mandatory.length < this.maxItems) {
+      this.items_mandatory.push(itemText);
+    }
+    this.closeItemModal();
+  }
+
+  removeItem(index: number): void {
+    this.items_mandatory.splice(index, 1);
+  }
+
+  get canAddMoreItems(): boolean {
+    return this.items_mandatory.length < this.maxItems;
   }
 
   onFileSelected(event: Event): void {
@@ -76,23 +116,17 @@ export class CreateBuild implements OnInit {
     const urlInput = (document.getElementById('imageUrl') as HTMLInputElement).value;
     if (!urlInput) return;
 
-    this.isLoading = true;
-    fetch(urlInput)
-      .then(response => {
-        if (!response.ok) throw new Error('No se pudo obtener la imagen');
-        return response.blob();
-      })
-      .then(blob => {
-        const extension = blob.type.split('/')[1];
-        const fileName = `url-image-${Date.now()}.${extension}`;
-        const file = new File([blob], fileName, { type: blob.type });
-        this.processImage(file);
-        this.isLoading = false;
-      })
-      .catch(error => {
-        this.imageError = 'Error al cargar la imagen: ' + error.message;
-        this.isLoading = false;
-      });
+    // Validate URL format
+    if (!urlInput.startsWith('http://') && !urlInput.startsWith('https://')) {
+      this.imageError = 'URL inválida. Debe comenzar con http:// o https://';
+      return;
+    }
+
+    // Store the URL directly
+    this.build.imagen = urlInput;
+    this.build.imagen_mime = 'image/uri';
+    this.imagePreview = urlInput;
+    this.imageError = null;
   }
 
   private processImage(file: File): void {
@@ -155,19 +189,23 @@ export class CreateBuild implements OnInit {
     
     this.uploadImage()
       .then(filename => {
-        this.build.imagen = filename || '';
+        if (filename) {
+          this.build.imagen = filename;
+        }
         
         const buildData = {
           nombre: this.build.nombre,
           clase: this.build.clase,
           ascendencia: this.build.ascendencia,
           autor: this.build.autor,
+          usuario_id: this.build.usuario_id,
           descripcion: this.build.descripcion,
           ventajas: this.build.ventajas,
           desventajas: this.build.desventajas,
           imagen: this.build.imagen,
           imagen_mime: this.build.imagen_mime,
           versiones: this.versiones,
+          items_mandatory: this.items_mandatory,
           valoraciones: {
             boss_dmg: Number(this.build.valoraciones?.boss_dmg) || 0,
             comfort: Number(this.build.valoraciones?.comfort) || 0,
@@ -178,17 +216,31 @@ export class CreateBuild implements OnInit {
           }
         };
 
-        this.buildService.createBuild(buildData as Build).subscribe({
-          next: (created) => {
-            this.isLoading = false;
-            alert('Build creada correctamente');
-            this.router.navigate(['/build', created._id]);
-          },
-          error: (error) => {
-            this.isLoading = false;
-            alert('Error al crear la build: ' + error.message);
-          }
-        });
+        if (this.isEditing && this.buildId) {
+          this.buildService.updateBuild(this.buildId, buildData as Build).subscribe({
+            next: (updated) => {
+              this.isLoading = false;
+              alert('Build actualizada correctamente');
+              this.router.navigate(['/build', updated._id]);
+            },
+            error: (error) => {
+              this.isLoading = false;
+              alert('Error al actualizar la build: ' + error.message);
+            }
+          });
+        } else {
+          this.buildService.createBuild(buildData as Build).subscribe({
+            next: (created) => {
+              this.isLoading = false;
+              alert('Build creada correctamente');
+              this.router.navigate(['/build', created._id]);
+            },
+            error: (error) => {
+              this.isLoading = false;
+              alert('Error al crear la build: ' + error.message);
+            }
+          });
+        }
       })
       .catch(error => {
         this.isLoading = false;

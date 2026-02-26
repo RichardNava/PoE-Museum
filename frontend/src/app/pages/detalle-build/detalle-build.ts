@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { BuildService } from '../../services/build';
+import { AuthService } from '../../services/auth';
 import { Build, Valoraciones } from '../../models/build.model';
 
 @Component({
@@ -14,19 +15,24 @@ export class DetalleBuild implements OnInit {
   build: Build | null = null;
   isImageModalOpen = false;
   isVersionesOpen = false;
+  currentUserName: string | null = null;
+  selectedVersionIndex = 0;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private location: Location,
     private buildService: BuildService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    this.currentUserName = user?.nombre || null;
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      // Primero buscar en caché
       const cachedBuilds = this.buildService.getBuildsFromCache();
       const cached = cachedBuilds.find(b => b._id === id);
       
@@ -34,7 +40,6 @@ export class DetalleBuild implements OnInit {
         this.build = cached;
         this.cdr.detectChanges();
       } else {
-        // Si no está en caché, hacer petición
         this.buildService.getBuildById(id).subscribe({
           next: (build) => {
             this.build = build;
@@ -49,12 +54,70 @@ export class DetalleBuild implements OnInit {
     }
   }
 
+  get hasVersions(): boolean {
+    return !!(this.build?.versiones && this.build.versiones.length > 0);
+  }
+
+  get hasItemsMandatory(): boolean {
+    return !!(this.build?.items_mandatory && this.build.items_mandatory.length > 0);
+  }
+
+  get currentVersion(): { name: string; pobb: string } | null {
+    if (!this.build?.versiones || this.build.versiones.length === 0) {
+      return null;
+    }
+    return this.build.versiones[this.selectedVersionIndex];
+  }
+
+  selectVersion(index: number): void {
+    this.selectedVersionIndex = index;
+    this.cdr.detectChanges();
+  }
+
   goBack(): void {
     this.location.back();
   }
 
   editBuild(): void {
-    this.router.navigate(['/create-build'], { state: { build: this.build } });
+    if (!this.currentUserName) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (this.build) {
+      if (this.build.autor === this.currentUserName) {
+        this.buildService.setBuildToEdit(this.build);
+        this.router.navigate(['/create-build']);
+      } else {
+        this.router.navigate(['/login']);
+      }
+    }
+  }
+
+  canEdit(): boolean {
+    if (!this.currentUserName || !this.build) return false;
+    return this.build.autor === this.currentUserName;
+  }
+
+  deleteBuild(): void {
+    if (!this.build || !this.currentUserName) return;
+    
+    if (this.build.autor !== this.currentUserName) {
+      return;
+    }
+
+    if (confirm('¿Estás seguro de que quieres eliminar esta build? Esta acción no se puede deshacer.')) {
+      this.buildService.deleteBuild(this.build._id).subscribe({
+        next: () => {
+          alert('Build eliminada correctamente');
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          console.error('Error al eliminar build:', err);
+          alert('Error al eliminar la build');
+        }
+      });
+    }
   }
 
   getStars(value: number): number[] {
@@ -65,8 +128,8 @@ export class DetalleBuild implements OnInit {
     return Math.min(1, Math.max(0, value - index));
   }
 
-  getImageUrl(imagen: string): string {
-    return this.buildService.getImageUrl(imagen);
+  getImageUrl(imagen: string, imagenMime: string = ''): string {
+    return this.buildService.getImageUrl(imagen, imagenMime);
   }
 
   parseList(text: string | undefined): string[] {

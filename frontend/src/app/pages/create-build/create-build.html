@@ -1,6 +1,6 @@
 <div class="container">
   <div class="page-header">
-    <h1 class="page-title">Crear Nueva Build</h1>
+    <h1 class="page-title">{{ isEditing ? 'Editar Build' : 'Crear Nueva Build' }}</h1>
     <p class="page-subtitle">Completa los datos de tu build de Path of Exile</p>
   </div>
 
@@ -78,7 +78,10 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label for="descripcion">Descripción</label>
+          <label for="descripcion">
+            Descripción 
+            <span class="help-tooltip" title="Puedes usar {texto} para crear enlaces a PoE Wiki. Ejemplo: {Life} creará un enlace a la página de Life.">?</span>
+          </label>
           <textarea id="descripcion" [(ngModel)]="build.descripcion" name="descripcion" rows="4"></textarea>
         </div>
       </div>
@@ -147,6 +150,36 @@
       </div>
     </div>
 
+    <!-- Items Mandatory -->
+    <div class="form-card">
+      <h3 class="form-card-title"><i class="fas fa-cubes"></i> Items Mandatory</h3>
+      <p class="form-card-description">Añade los items esenciales para esta build (copiados del juego con Ctrl+Alt+C)</p>
+      
+      <div class="items-mandatory-section">
+        <button 
+          type="button" 
+          class="btn-secondary add-item-btn" 
+          (click)="openItemModal()"
+          [disabled]="!canAddMoreItems">
+          <i class="fas fa-plus"></i> Añadir Item ({{ items_mandatory.length }}/{{ maxItems }})
+        </button>
+
+        <div class="items-list" *ngIf="items_mandatory && items_mandatory.length > 0">
+          <div class="item-entry" *ngFor="let item of items_mandatory; let i = index">
+            <app-poe-item [itemText]="item" [compact]="true"></app-poe-item>
+            <button type="button" class="remove-item-btn" (click)="removeItem(i)">
+              <i class="fas fa-times"></i> Eliminar
+            </button>
+          </div>
+        </div>
+
+        <div class="no-items" *ngIf="!items_mandatory || items_mandatory.length === 0">
+          <i class="fas fa-box-open"></i>
+          <span>No hay items añadidos</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Ventajas y Desventajas -->
     <div class="form-card">
       <h3 class="form-card-title"><i class="fas fa-thumbs-up"></i> Ventajas y Desventajas</h3>
@@ -174,10 +207,17 @@
           <input type="file" accept=".json" (change)="loadFromJson($event)" hidden />
         </label>
         <button type="submit" class="btn-submit" [disabled]="isLoading">
-          <i class="fas fa-paper-plane"></i> {{ isLoading ? 'Enviando...' : 'Enviar' }}
+          <i class="fas" [class.fa-paper-plane]="!isEditing" [class.fa-save]="isEditing"></i> 
+          {{ isLoading ? (isEditing ? 'Actualizando...' : 'Enviando...') : (isEditing ? 'Actualizar' : 'Crear') }}
         </button>
       </div>
     </div>
 
   </form>
+
+  <app-add-item-modal 
+    [isOpen]="isItemModalOpen" 
+    (close)="closeItemModal()"
+    (addItem)="addItem($event)">
+  </app-add-item-modal>
 </div>

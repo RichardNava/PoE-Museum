@@ -1,0 +1,33 @@
+<div class="container" *ngIf="user">
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <h1>{{ user.nombre }}</h1>
+    </div>
+
+    <div class="profile-info">
+      <div class="info-item">
+        <span class="label">Email</span>
+        <span class="value">{{ user.email }}</span>
+      </div>
+      
+      <div class="info-item">
+        <span class="label">Cuenta PoE</span>
+        <span class="value">{{ user.cuenta_poe || 'No configurada' }}</span>
+      </div>
+      
+      <div class="info-item">
+        <span class="label">Miembro desde</span>
+        <span class="value">{{ user.fecha_creacion | date:'dd/MM/yyyy' }}</span>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <button class="btn-logout" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+      </button>
+    </div>
+  </div>
+</div>
