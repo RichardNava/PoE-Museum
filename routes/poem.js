@@ -83,6 +83,19 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res) => {
+    try {
+        const build = await Build.findByIdAndDelete(req.params.id);
+        if (!build) {
+            return res.status(404).json({ message: 'Build no encontrada' });
+        }
+        res.json({ message: 'Build eliminada correctamente', build });
+    } catch (error) {
+        console.error('Error al eliminar build:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 router.get('/user/:userId', async (req, res) => {
     try {
         const builds = await Build.find({ usuario_id: req.params.userId });

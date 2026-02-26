@@ -18,6 +18,7 @@ import { ProfileComponent } from './pages/profile/profile';
 import { IsLoggedInDirective } from './directives/is-logged-in.directive';
 import { PoeItemComponent } from './components/poe-item/poe-item';
 import { AddItemModalComponent } from './components/add-item-modal/add-item-modal';
+import { WikiLinkPipe } from './pipes/wiki-link.pipe';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { AddItemModalComponent } from './components/add-item-modal/add-item-moda
       timeOut: 3000,
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
-    })
+    }),
+    WikiLinkPipe
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),

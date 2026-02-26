@@ -142,3 +142,16 @@ h1, h2, h3, h4, h5, h6 {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+
+/* Wiki links - {text} format */
+.wiki-link {
+  color: #12C9FF;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
+
+.wiki-link:hover {
+  color: #FF9EF0;
+  text-decoration-style: solid;
+}

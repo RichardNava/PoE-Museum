@@ -1,70 +1,175 @@
-<div class="poe-item" *ngIf="item" [ngClass]="getRarityClass()">
-  <!-- Nombre y Tipo -->
-  <div class="item-header">
-    {{ item.nameAndType }}
-  </div>
-  
-  <!-- Item Class y Rarity -->
-  <div class="item-info">
-    {{ item.itemClass }} - Rarity: {{ item.rarity }}
-  </div>
+<div class="poe-item-wrapper" *ngIf="item">
+  <!-- Compact view: card with name + image -->
+  <div class="poe-item compact" [ngClass]="getRarityClass()" 
+       *ngIf="compact">
+    <div class="compact-card">
+      <div class="compact-image">
+        <img *ngIf="itemImageUrl" [src]="itemImageUrl" [alt]="item.baseType">
+        <div *ngIf="loadingImage && !itemImageUrl" class="compact-loading">...</div>
+        <div *ngIf="!loadingImage && !itemImageUrl" class="compact-placeholder">
+          <i class="fas fa-cube"></i>
+        </div>
+      </div>
+      <div class="compact-name">
+        {{ item.nameAndType }}
+      </div>
+    </div>
+    
+    <!-- Hover tooltip with full info -->
+    <div class="item-tooltip">
+      <div class="tooltip-content">
+        <!-- Imagen del item -->
+        <div class="tooltip-image" *ngIf="itemImageUrl">
+          <img [src]="itemImageUrl" [alt]="item.baseType">
+        </div>
+        
+        <!-- Nombre y Tipo -->
+        <div class="tooltip-header">
+          {{ item.nameAndType }}
+        </div>
+        
+        <!-- Item Class y Rarity -->
+        <div class="tooltip-info">
+          {{ item.itemClass }} - Rarity: {{ item.rarity }}
+        </div>
 
-  <!-- Quality y defensas -->
-  <div class="item-stats" *ngIf="item.quality || item.armour || item.energyShield">
-    <span class="stat" *ngIf="item.quality">{{ item.quality }}</span>
-    <span class="stat" *ngIf="item.armour">{{ item.armour }}</span>
-    <span class="stat" *ngIf="item.energyShield">{{ item.energyShield }}</span>
-    <span class="stat" *ngIf="item.physicalDamage">{{ item.physicalDamage }}</span>
-    <span class="stat" *ngIf="item.critChance">{{ item.critChance }}</span>
-    <span class="stat" *ngIf="item.attacksPerSec">{{ item.attacksPerSec }}</span>
-  </div>
+        <!-- Quality y defensas -->
+        <div class="tooltip-stats" *ngIf="item.quality || item.armour || item.energyShield">
+          <span class="stat" *ngIf="item.quality">{{ item.quality }}</span>
+          <span class="stat" *ngIf="item.armour">{{ item.armour }}</span>
+          <span class="stat" *ngIf="item.energyShield">{{ item.energyShield }}</span>
+          <span class="stat" *ngIf="item.physicalDamage">{{ item.physicalDamage }}</span>
+          <span class="stat" *ngIf="item.critChance">{{ item.critChance }}</span>
+          <span class="stat" *ngIf="item.attacksPerSec">{{ item.attacksPerSec }}</span>
+        </div>
 
-  <!-- Requirements en una sola línea -->
-  <div class="item-requirements" *ngIf="item.requirements">
-    {{ item.requirements }}
-  </div>
+        <!-- Requirements -->
+        <div class="tooltip-req" *ngIf="item.requirements">
+          {{ item.requirements }}
+        </div>
 
-  <!-- Sockets -->
-  <div class="item-sockets" *ngIf="item.sockets">
-    {{ item.sockets }}
-  </div>
+        <!-- Sockets -->
+        <div class="tooltip-sockets" *ngIf="item.sockets">
+          {{ item.sockets }}
+        </div>
 
-  <!-- Item Level -->
-  <div class="item-level" *ngIf="item.itemLevel">
-    {{ item.itemLevel }}
-  </div>
+        <!-- Item Level -->
+        <div class="tooltip-ilvl" *ngIf="item.itemLevel">
+          {{ item.itemLevel }}
+        </div>
 
-  <!-- Enchantments -->
-  <div class="item-section enchantments" *ngIf="item.enchantments.length > 0">
-    <div class="section-label">Enchant</div>
-    <div class="section-content" *ngFor="let enc of item.enchantments">
-      {{ enc }}
+        <!-- Enchantments -->
+        <div class="tooltip-section enchantments" *ngIf="item.enchantments.length > 0">
+          <div class="section-label">Enchant</div>
+          <div class="section-content" *ngFor="let enc of item.enchantments">
+            {{ enc }}
+          </div>
+        </div>
+
+        <!-- Implicits -->
+        <div class="tooltip-section implicits" *ngIf="item.implicits.length > 0">
+          <div class="section-label">Implicits ({{item.implicits.length}})</div>
+          <div class="section-content" *ngFor="let imp of item.implicits">
+            {{ imp }}
+          </div>
+        </div>
+
+        <!-- Explicits -->
+        <div class="tooltip-section explicits" *ngIf="item.explicits.length > 0">
+          <div class="section-label">Explicits ({{item.explicits.length}})</div>
+          <div class="section-content" *ngFor="let exp of item.explicits">
+            {{ exp }}
+          </div>
+        </div>
+
+        <!-- Influence -->
+        <div class="tooltip-influence" *ngIf="item.influence">
+          {{ item.influence }}
+        </div>
+
+        <!-- Corrupted -->
+        <div class="tooltip-corrupted" *ngIf="item.isCorrupted">
+          Corrupted
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Implicits -->
-  <div class="item-section implicits" *ngIf="item.implicits.length > 0">
-    <div class="section-label">Implicits ({{item.implicits.length}})</div>
-    <div class="section-content" *ngFor="let imp of item.implicits">
-      {{ imp }}
+  <!-- Full view (non-compact) -->
+  <div class="poe-item" *ngIf="!compact" [ngClass]="getRarityClass()">
+    <!-- Imagen del item -->
+    <div class="item-image" *ngIf="itemImageUrl || loadingImage">
+      <img *ngIf="itemImageUrl" [src]="itemImageUrl" [alt]="item.baseType">
+      <div *ngIf="loadingImage" class="image-loading">Cargando...</div>
     </div>
-  </div>
-
-  <!-- Explicits -->
-  <div class="item-section explicits" *ngIf="item.explicits.length > 0">
-    <div class="section-label">Explicits ({{item.explicits.length}})</div>
-    <div class="section-content" *ngFor="let exp of item.explicits">
-      {{ exp }}
+    
+    <!-- Nombre y Tipo -->
+    <div class="item-header">
+      {{ item.nameAndType }}
     </div>
-  </div>
+    
+    <!-- Item Class y Rarity -->
+    <div class="item-info">
+      {{ item.itemClass }} - Rarity: {{ item.rarity }}
+    </div>
 
-  <!-- Influence -->
-  <div class="item-influence" *ngIf="item.influence">
-    {{ item.influence }}
-  </div>
+    <!-- Quality y defensas -->
+    <div class="item-stats" *ngIf="item.quality || item.armour || item.energyShield">
+      <span class="stat" *ngIf="item.quality">{{ item.quality }}</span>
+      <span class="stat" *ngIf="item.armour">{{ item.armour }}</span>
+      <span class="stat" *ngIf="item.energyShield">{{ item.energyShield }}</span>
+      <span class="stat" *ngIf="item.physicalDamage">{{ item.physicalDamage }}</span>
+      <span class="stat" *ngIf="item.critChance">{{ item.critChance }}</span>
+      <span class="stat" *ngIf="item.attacksPerSec">{{ item.attacksPerSec }}</span>
+    </div>
 
-  <!-- Corrupted -->
-  <div class="item-corrupted" *ngIf="item.isCorrupted">
-    Corrupted
+    <!-- Requirements -->
+    <div class="item-requirements" *ngIf="item.requirements">
+      {{ item.requirements }}
+    </div>
+
+    <!-- Sockets -->
+    <div class="item-sockets" *ngIf="item.sockets">
+      {{ item.sockets }}
+    </div>
+
+    <!-- Item Level -->
+    <div class="item-level" *ngIf="item.itemLevel">
+      {{ item.itemLevel }}
+    </div>
+
+    <!-- Enchantments -->
+    <div class="item-section enchantments" *ngIf="item.enchantments.length > 0">
+      <div class="section-label">Enchant</div>
+      <div class="section-content" *ngFor="let enc of item.enchantments">
+        {{ enc }}
+      </div>
+    </div>
+
+    <!-- Implicits -->
+    <div class="item-section implicits" *ngIf="item.implicits.length > 0">
+      <div class="section-label">Implicits ({{item.implicits.length}})</div>
+      <div class="section-content" *ngFor="let imp of item.implicits">
+        {{ imp }}
+      </div>
+    </div>
+
+    <!-- Explicits -->
+    <div class="item-section explicits" *ngIf="item.explicits.length > 0">
+      <div class="section-label">Explicits ({{item.explicits.length}})</div>
+      <div class="section-content" *ngFor="let exp of item.explicits">
+        {{ exp }}
+      </div>
+    </div>
+
+    <!-- Influence -->
+    <div class="item-influence" *ngIf="item.influence">
+      {{ item.influence }}
+    </div>
+
+    <!-- Corrupted -->
+    <div class="item-corrupted" *ngIf="item.isCorrupted">
+      Corrupted
+    </div>
   </div>
 </div>

@@ -99,6 +99,27 @@ export class DetalleBuild implements OnInit {
     return this.build.autor === this.currentUserName;
   }
 
+  deleteBuild(): void {
+    if (!this.build || !this.currentUserName) return;
+    
+    if (this.build.autor !== this.currentUserName) {
+      return;
+    }
+
+    if (confirm('¿Estás seguro de que quieres eliminar esta build? Esta acción no se puede deshacer.')) {
+      this.buildService.deleteBuild(this.build._id).subscribe({
+        next: () => {
+          alert('Build eliminada correctamente');
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          console.error('Error al eliminar build:', err);
+          alert('Error al eliminar la build');
+        }
+      });
+    }
+  }
+
   getStars(value: number): number[] {
     return Array(5).fill(0);
   }
@@ -107,8 +128,8 @@ export class DetalleBuild implements OnInit {
     return Math.min(1, Math.max(0, value - index));
   }
 
-  getImageUrl(imagen: string): string {
-    return this.buildService.getImageUrl(imagen);
+  getImageUrl(imagen: string, imagenMime: string = ''): string {
+    return this.buildService.getImageUrl(imagen, imagenMime);
   }
 
   parseList(text: string | undefined): string[] {

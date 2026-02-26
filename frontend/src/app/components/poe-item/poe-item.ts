@@ -1,7 +1,9 @@
 import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
+import { PoeWikiService } from '../../services/poe-wiki';
 
 interface ParsedItem {
   nameAndType: string;
+  baseType: string;
   itemClass: string;
   rarity: string;
   quality: string;
@@ -28,11 +30,17 @@ interface ParsedItem {
 })
 export class PoeItemComponent implements OnInit {
   @Input() itemText: string = '';
+  @Input() compact: boolean = false;
   
   item: ParsedItem | null = null;
   error: string = '';
+  itemImageUrl: string = '';
+  loadingImage: boolean = false;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private poeWikiService: PoeWikiService
+  ) {}
 
   ngOnInit(): void {
     this.parseItem();
@@ -92,6 +100,7 @@ export class PoeItemComponent implements OnInit {
     try {
       this.item = this.parseLines(lines);
       this.error = '';
+      this.loadItemImage();
     } catch (e) {
       this.error = 'Error al parsear el item';
       console.error('Parse error:', e);
@@ -100,9 +109,31 @@ export class PoeItemComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  private loadItemImage(): void {
+    if (!this.item || !this.item.baseType) {
+      return;
+    }
+    
+    this.loadingImage = true;
+    const isUnique = this.item.rarity === 'Unique';
+    
+    this.poeWikiService.getItemImage(this.item.baseType, isUnique).subscribe({
+      next: (url) => {
+        this.itemImageUrl = url || '';
+        this.loadingImage = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loadingImage = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   private parseLines(lines: string[]): ParsedItem {
     const item: ParsedItem = {
       nameAndType: '',
+      baseType: '',
       itemClass: '',
       rarity: '',
       quality: '',
@@ -123,21 +154,28 @@ export class PoeItemComponent implements OnInit {
     const socketsIdx = lines.findIndex(l => l.includes('Sockets:'));
     const ilvlIdx = lines.findIndex(l => l.startsWith('Item Level:'));
 
+    // Rarity - MUST be first since baseType depends on it
+    if (rarityIdx >= 0) {
+      item.rarity = lines[rarityIdx].replace('Rarity:', '').trim();
+    }
+
     // Name and Type (after Rarity)
     if (rarityIdx >= 0 && rarityIdx + 1 < lines.length) {
       const name = lines[rarityIdx + 1];
       const type = lines[rarityIdx + 2] || '';
       item.nameAndType = `${name}, ${type}`;
+      
+      // Extract baseType based on rarity
+      if (item.rarity === 'Unique') {
+        item.baseType = name;
+      } else {
+        item.baseType = type;
+      }
     }
 
     // Item Class
     if (classIdx >= 0) {
       item.itemClass = lines[classIdx].replace('Item Class:', '').trim();
-    }
-
-    // Rarity
-    if (rarityIdx >= 0) {
-      item.rarity = lines[rarityIdx].replace('Rarity:', '').trim();
     }
 
     // Stats (between Rarity and Requirements)
