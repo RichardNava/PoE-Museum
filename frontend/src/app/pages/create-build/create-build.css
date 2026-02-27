@@ -2,7 +2,6 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 3rem 2rem;
-  background-color: var(--color-bg-primary);
   min-height: calc(100vh - 72px);
 }
 
@@ -189,6 +188,37 @@
   color: var(--color-text-primary);
 }
 
+.input-group input[type="file"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border: 1px dashed var(--color-accent-primary);
+}
+
+.pro-hint {
+  color: var(--color-accent-primary);
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.file-input-wrapper {
+  position: relative;
+}
+
+.file-input-wrapper.disabled {
+  border: 1px dashed var(--color-accent-primary);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+}
+
+.file-input-wrapper.disabled small {
+  color: var(--color-accent-primary);
+  font-size: 0.75rem;
+  font-style: italic;
+  display: block;
+  text-align: center;
+  margin-top: 0.25rem;
+}
+
 .url-input-row {
   display: flex;
   gap: 0.5rem;
@@ -371,7 +401,7 @@
 }
 
 .load-json-btn {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.09);
   border: 1px solid var(--color-border);
   color: var(--color-text-primary);
   padding: 0.875rem 1.5rem;
@@ -384,11 +414,11 @@
 }
 
 .load-json-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .btn-submit {
-  background: linear-gradient(135deg, var(--color-accent-primary), #00a8cc);
+  background: linear-gradient(90deg, #f8ff00 0%, #3ad59f 100%);
   border: none;
   color: #000;
   padding: 0.875rem 2rem;

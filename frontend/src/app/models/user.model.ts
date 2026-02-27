@@ -4,5 +4,6 @@ export interface User {
   email: string;
   password: string;
   cuenta_poe: string;
+  rol: 'User' | 'Pro' | 'Admin';
   fecha_creacion: Date;
 }

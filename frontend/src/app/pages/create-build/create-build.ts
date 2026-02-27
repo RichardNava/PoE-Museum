@@ -44,12 +44,35 @@ export class CreateBuild implements OnInit {
   buildId: string | null = null;
   isItemModalOpen = false;
   maxItems = 8;
+  canUploadLocalImage = false;
 
   clases = [
-    'Marauder', 'Ranger', 'Witch', 'Shadow', 'Duelist', 'Templar', 'Scion', 'Ascendant'
+    'Marauder', 'Ranger', 'Witch', 'Shadow', 'Duelist', 'Templar', 'Scion'
   ];
 
+  ascendenciasPorClase: { [key: string]: string[] } = {
+    'Marauder': ['Chieftain', 'Berserker', 'Juggernaut'],
+    'Ranger': ['Pathfinder', 'Deadeye', 'Warden'],
+    'Witch': ['Elementalist', 'Necromancer', 'Occultist'],
+    'Shadow': ['Assassin', 'Trickster', 'Saboteur'],
+    'Duelist': ['Slayer', 'Gladiator', 'Champion'],
+    'Templar': ['Hierophant', 'Guardian', 'Inquisitor'],
+    'Scion': ['Ascendant']
+  };
+
+  ascendenciasDisponibles: string[] = [];
+
   opcionesValoracion = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+
+  onClaseChange(): void {
+    const claseSeleccionada = this.build.clase;
+    if (claseSeleccionada && this.ascendenciasPorClase[claseSeleccionada]) {
+      this.ascendenciasDisponibles = this.ascendenciasPorClase[claseSeleccionada];
+      this.build.ascendencia = '';
+    } else {
+      this.ascendenciasDisponibles = [];
+    }
+  }
 
   constructor(
     private router: Router,
@@ -61,6 +84,10 @@ export class CreateBuild implements OnInit {
 
   ngOnInit(): void {
     const currentUser = this.authService.getCurrentUser();
+    
+    if (currentUser) {
+      this.canUploadLocalImage = currentUser.rol === 'Admin' || currentUser.rol === 'Pro';
+    }
     
     const buildToEdit = this.buildService.getBuildToEdit();
     
