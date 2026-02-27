@@ -2,8 +2,21 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 3rem 2rem;
-  background-color: var(--color-bg-primary);
   min-height: calc(100vh - 72px);
+  position: relative;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 17, 23, 0.85);
+  z-index: 0;
+}
+
+.container > * {
+  position: relative;
+  z-index: 1;
 }
 
 .build-detail {
@@ -449,7 +462,7 @@
 }
 
 .btn-editar {
-  background: linear-gradient(135deg, var(--color-accent-primary), #00a8cc);
+  background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%);
   color: #000000;
   box-shadow: 0 4px 15px rgba(18, 201, 255, 0.3);
 }

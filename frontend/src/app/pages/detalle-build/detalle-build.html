@@ -1,4 +1,4 @@
-<div class="container" *ngIf="build; else loading">
+<div class="container" *ngIf="build; else loading" [style.background-image]="claseBackground ? 'url(' + claseBackground + ')' : ''" [style.background-size]="'cover'" [style.background-position]="'center'" [style.background-repeat]="'no-repeat'">
   <div class="build-detail">
     
     <!-- Fila principal: Imagen a la izquierda, info a la derecha -->
@@ -131,17 +131,19 @@
             <i class="fas fa-chevron-down version-chevron"></i>
           </div>
           
-          <!-- Lista de versiones -->
+          <!-- Versión actual -->
           <div class="versiones-container">
-            <div class="version-item">
+            <div class="version-item version-main">
               <i class="fas fa-link"></i>
               <a [href]="currentVersion?.pobb" target="_blank" rel="noopener">{{ currentVersion?.name }}</a>
               <i class="fas fa-external-link-alt external-icon"></i>
             </div>
-            <div class="versiones-dropdown" *ngIf="isVersionesOpen && build.versiones.length > 1">
-              <div class="version-item" *ngFor="let version of build.versiones.slice(1); let i = index" (click)="selectVersion(i + 1)">
+            
+            <!-- Dropdown con el resto de versiones -->
+            <div class="versiones-dropdown" *ngIf="isVersionesOpen">
+              <div class="version-item" *ngFor="let version of getOtherVersions()" (click)="selectVersion(version.index)">
                 <i class="fas fa-link"></i>
-                <a [href]="version.pobb" target="_blank" rel="noopener">{{ version.name }}</a>
+                <a [href]="version.version.pobb" target="_blank" rel="noopener">{{ version.version.name }}</a>
                 <i class="fas fa-external-link-alt external-icon"></i>
               </div>
             </div>

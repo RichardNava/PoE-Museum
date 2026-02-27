@@ -26,6 +26,7 @@ router.post('/register', async (req, res) => {
             nombre: user.nombre,
             email: user.email,
             cuenta_poe: user.cuenta_poe,
+            rol: user.rol,
             fecha_creacion: user.fecha_creacion
         };
         
@@ -39,18 +40,13 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log('Login attempt:', { email, password, body: req.body });
         
         const user = await User.findOne({ email });
-        console.log('User found:', user);
         if (!user) {
             return res.status(401).json({ message: 'Email o password incorrectos' });
         }
 
         const storedPassword = user.password || user.contraseña;
-        console.log('User password in DB:', storedPassword);
-        console.log('Password from request:', password);
-        console.log('Match:', storedPassword === password);
         
         if (storedPassword !== password) {
             return res.status(401).json({ message: 'Email o password incorrectos' });
@@ -61,6 +57,7 @@ router.post('/login', async (req, res) => {
             nombre: user.nombre,
             email: user.email,
             cuenta_poe: user.cuenta_poe,
+            rol: user.rol,
             fecha_creacion: user.fecha_creacion
         };
         

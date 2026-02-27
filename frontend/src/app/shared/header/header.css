@@ -3,7 +3,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 2.5rem;
-  background: linear-gradient(180deg, rgba(15, 13, 17, 0.98) 0%, rgba(22, 19, 22, 0.95) 100%);
+  background: 
+    linear-gradient(180deg, rgba(20, 20, 20, 0.98) 0%, rgba(10, 10, 10, 0.95) 100%);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--color-border);
   position: fixed;
@@ -20,9 +21,9 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
+  height: 2px;
   background: linear-gradient(90deg, transparent, var(--color-accent-primary), transparent);
-  opacity: 0.5;
+  opacity: 0.8;
 }
 
 .navbar-left .logo {
@@ -45,10 +46,11 @@
 .navbar-left .logo-text {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+  background: linear-gradient(135deg, #e8a900, #f5b800);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-shadow: 0 0 30px rgba(232, 169, 0, 0.4);
 }
 
 .navbar-center .nav-links {
@@ -116,7 +118,7 @@
 
 .search-box:focus-within {
   border-color: var(--color-accent-primary);
-  box-shadow: 0 0 0 3px rgba(18, 201, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(232, 169, 0, 0.15);
 }
 
 .search-box input {
@@ -142,7 +144,7 @@
 }
 
 .user-icon {
-  background: linear-gradient(135deg, var(--color-accent-primary), #00a8cc);
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
   color: #000000;
   width: 42px;
   height: 42px;
@@ -152,12 +154,12 @@
   justify-content: center;
   cursor: pointer;
   transition: all var(--transition-normal);
-  box-shadow: 0 2px 10px rgba(18, 201, 255, 0.3);
+  box-shadow: 0 2px 10px rgba(232, 169, 0, 0.3);
 }
 
 .user-icon:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(18, 201, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(232, 169, 0, 0.5);
 }
 
 .dropdown-menu {
