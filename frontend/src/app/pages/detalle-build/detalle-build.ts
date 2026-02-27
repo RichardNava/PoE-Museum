@@ -54,6 +54,11 @@ export class DetalleBuild implements OnInit {
     }
   }
 
+  get claseBackground(): string {
+    if (!this.build?.clase) return '';
+    return `/assets/images/bg/${this.build.clase.toLowerCase()}.jpg`;
+  }
+
   get hasVersions(): boolean {
     return !!(this.build?.versiones && this.build.versiones.length > 0);
   }
@@ -164,5 +169,12 @@ export class DetalleBuild implements OnInit {
 
   toggleVersiones(): void {
     this.isVersionesOpen = !this.isVersionesOpen;
+  }
+
+  getOtherVersions(): { version: { name: string; pobb: string }; index: number }[] {
+    if (!this.build?.versiones) return [];
+    return this.build.versiones
+      .map((v, i) => ({ version: v, index: i }))
+      .filter(v => v.index !== this.selectedVersionIndex);
   }
 }
