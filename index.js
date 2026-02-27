@@ -34,15 +34,24 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-const upload = multer({ 
+const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
     limits: { fileSize: 5 * 1024 * 1024 }
 });
 
 // Enable CORS with specific options
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:4200,http://localhost:8080")
+    .split(",")
+    .map(s => s.trim());
+
 app.use(cors({
-    origin: ['http://localhost:4200', 'http://localhost:8080'],
+    origin: function (origin, callback) {
+        // Permitir llamadas sin origin (Postman, curl, etc.)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        return callback(new Error("Not allowed by CORS: " + origin));
+    },
     credentials: true
 }));
 
@@ -56,7 +65,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No se ha proporcionado ninguna imagen' });
     }
-    res.json({ 
+    res.json({
         filename: req.file.filename,
         originalName: req.file.originalname,
         mimetype: req.file.mimetype
@@ -92,19 +101,19 @@ app.get('/api/poe-wiki/image', async (req, res) => {
     // First, get the images for the page
     const apiUrl = `https://www.poewiki.net/api.php?action=query&titles=${encodeURIComponent(title)}&prop=images&format=json`;
     console.log(`[Proxy] Request URL: ${apiUrl}`);
-    
+
     https.get(apiUrl, (apiRes) => {
         let data = '';
-        
+
         apiRes.on('data', (chunk) => {
             data += chunk;
         });
-        
+
         apiRes.on('end', () => {
             try {
                 const response = JSON.parse(data);
                 const pages = response?.query?.pages;
-                
+
                 if (!pages) {
                     return res.json({ imageUrl: null });
                 }
@@ -112,29 +121,29 @@ app.get('/api/poe-wiki/image', async (req, res) => {
                 for (const pageId in pages) {
                     const page = pages[pageId];
                     const itemTitle = page.title;
-                    
+
                     if (!page.images) continue;
 
                     // Escape special regex characters
                     const escapedTitle = itemTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    
+
                     // First priority: "inventory icon" (exact match preferred)
                     const invIconRegex = new RegExp(
-                        `File:${escapedTitle}.*inventory icon\\.png$`, 
+                        `File:${escapedTitle}.*inventory icon\\.png$`,
                         'i'
                     );
 
-                    let foundImage = page.images.find(img => 
+                    let foundImage = page.images.find(img =>
                         img.title && invIconRegex.test(img.title)
                     );
 
                     // Second priority: "3D" if no inventory icon found
                     if (!foundImage) {
                         const d3Regex = new RegExp(
-                            `File:${escapedTitle}.*3D\\.png$`, 
+                            `File:${escapedTitle}.*3D\\.png$`,
                             'i'
                         );
-                        foundImage = page.images.find(img => 
+                        foundImage = page.images.find(img =>
                             img.title && d3Regex.test(img.title)
                         );
                     }
@@ -150,7 +159,7 @@ app.get('/api/poe-wiki/image', async (req, res) => {
                     console.log(`[Proxy] No se encontró imagen para ${itemTitle}`);
                     return res.json({ imageUrl: null });
                 }
-                
+
                 return res.json({ imageUrl: null });
             } catch (e) {
                 console.error('[Proxy] Error parsing response:', e);
@@ -165,19 +174,19 @@ app.get('/api/poe-wiki/image', async (req, res) => {
 
 function getImageInfo(imageName, callback) {
     const apiUrl = `https://www.poewiki.net/api.php?action=query&titles=${encodeURIComponent(imageName)}&prop=imageinfo&iiprop=url&format=json`;
-    
+
     https.get(apiUrl, (apiRes) => {
         let data = '';
-        
+
         apiRes.on('data', (chunk) => {
             data += chunk;
         });
-        
+
         apiRes.on('end', () => {
             try {
                 const response = JSON.parse(data);
                 const pages = response?.query?.pages;
-                
+
                 for (const pageId in pages) {
                     const page = pages[pageId];
                     if (page.imageinfo && page.imageinfo[0]) {
@@ -203,18 +212,18 @@ app.get('/api/builds', async (req, res) => {
     try {
         console.log('Endpoint /api/builds - conectando a MongoDB...');
         const mongoose = require('mongoose');
-        
+
         // Conexión directa
         const conn = mongoose.connection;
         const db = conn.db;
-        
+
         // Usar colección nativa
         const builds = await db.collection('builds').find({}).toArray();
         console.log(`Encontradas ${builds.length} builds (endpoint /api/builds)`);
         res.json(builds);
     } catch (error) {
         console.error('Error en endpoint /api/builds:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             message: error.message,
             details: error.stack
         });
@@ -262,9 +271,9 @@ app.use('/auth', require('./routes/auth'));
 // Error handling middleware
 app.use((error, req, res, next) => {
     console.error('Unhandled error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
         message: 'Internal server error',
-        error: error.message 
+        error: error.message
     });
 });
 
