@@ -5,6 +5,7 @@ import { BuildService } from '../../services/build';
 import { AuthService } from '../../services/auth';
 import { Build } from '../../models/build.model';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-create-build',
@@ -92,7 +93,6 @@ export class CreateBuild implements OnInit {
     const buildToEdit = this.buildService.getBuildToEdit();
     
     if (buildToEdit) {
-      console.log('Build recibida para edición:', buildToEdit);
       this.isEditing = true;
       this.buildId = buildToEdit._id || null;
       this.build = { ...buildToEdit };
@@ -195,7 +195,7 @@ export class CreateBuild implements OnInit {
     formData.append('image', this.selectedFile);
 
     return new Promise((resolve, reject) => {
-      this.http.post<{ filename: string }>('http://localhost:3000/upload', formData)
+      this.http.post<{ filename: string }>(`${environment.apiBaseUrl}/upload`, formData)
         .subscribe({
           next: (response) => {
             resolve(response.filename);

@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Build } from '../models/build.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BuildService {
-  private apiUrl = 'http://localhost:3000/poem';
-  private imageUrl = 'http://localhost:3000/images/';
+  private apiUrl = `${environment.apiBaseUrl}/poem`;
+  private imageUrl = `${environment.apiBaseUrl}/images/`;
   private buildsCache: Build[] = [];
   
   private buildToEditSubject = new BehaviorSubject<Build | null>(null);

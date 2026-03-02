@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, map } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PoeWikiService {
   private wikiBaseUrl = 'https://www.poewiki.net/wiki/';
-  private proxyUrl = 'http://localhost:3000/api/poe-wiki/image';
+  private proxyUrl = `${environment.apiBaseUrl}/api/poe-wiki/image`;
   
   private imageCache: Map<string, string> = new Map();
 
