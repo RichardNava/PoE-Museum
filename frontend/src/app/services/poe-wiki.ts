@@ -8,7 +8,7 @@ import { Observable, of, map } from 'rxjs';
 export class PoeWikiService {
   private wikiBaseUrl = 'https://www.poewiki.net/wiki/';
   private proxyUrl = 'http://localhost:3000/api/poe-wiki/image';
-
+  
   private imageCache: Map<string, string> = new Map();
 
   constructor(private http: HttpClient) {}
