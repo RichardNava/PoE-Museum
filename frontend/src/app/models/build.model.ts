@@ -12,6 +12,11 @@ export interface Version {
   pobb: string;
 }
 
+export interface ItemMandatory {
+  description: string;
+  img: string;
+}
+
 export interface Build {
   _id: string;
   ascendencia: string;
@@ -26,6 +31,6 @@ export interface Build {
   valoraciones: Valoraciones;
   ventajas: string;
   versiones: Version[];
-  items_mandatory?: string[];
+  items_mandatory?: ItemMandatory[];
   usuario_id?: string;
 }

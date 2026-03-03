@@ -192,7 +192,8 @@
       <div class="items-grid">
         <app-poe-item 
           *ngFor="let item of build.items_mandatory" 
-          [itemText]="item"
+          [itemText]="item.description"
+          [itemImg]="item.img"
           [compact]="true">
         </app-poe-item>
       </div>

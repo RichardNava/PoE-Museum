@@ -31,6 +31,7 @@ interface ParsedItem {
 export class PoeItemComponent implements OnInit {
   @Input() itemText: string = '';
   @Input() compact: boolean = false;
+  @Input() itemImg: string = '';
   
   item: ParsedItem | null = null;
   error: string = '';
@@ -110,14 +111,20 @@ export class PoeItemComponent implements OnInit {
   }
 
   private loadItemImage(): void {
-    if (!this.item || !this.item.baseType) {
+    // Si ya tenemos una URL de imagen proporcionada, usarla directamente
+    if (this.itemImg) {
+      this.itemImageUrl = this.itemImg;
+      return;
+    }
+    
+    // Fallback: si no hay img, intentar obtenerla usando baseType
+    if (!this.item?.baseType) {
       return;
     }
     
     this.loadingImage = true;
-    const isUnique = this.item.rarity === 'Unique';
     
-    this.poeWikiService.getItemImage(this.item.baseType, isUnique).subscribe({
+    this.poeWikiService.getItemImage(this.item.baseType).subscribe({
       next: (url) => {
         this.itemImageUrl = url || '';
         this.loadingImage = false;
@@ -247,5 +254,13 @@ export class PoeItemComponent implements OnInit {
 
   getRarityClass(): string {
     return this.item?.rarity?.toLowerCase() || '';
+  }
+
+  getExplicitClass(line: string): string {
+    const lower = line.toLowerCase();
+    if (lower.includes('(crafted)')) return 'explicit-crafted';
+    if (lower.includes('(fractured)')) return 'explicit-fractured';
+    if (lower.includes('(crucible)')) return 'explicit-crucible';
+    return '';
   }
 }

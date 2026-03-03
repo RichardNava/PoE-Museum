@@ -14,20 +14,18 @@ export class PoeWikiService {
 
   constructor(private http: HttpClient) {}
 
-  getItemImage(baseType: string, isUnique: boolean): Observable<string | null> {
-    const searchName = baseType.trim();
-    const cacheKey = `${searchName}_${isUnique}`;
+  getItemImage(itemName: string): Observable<string | null> {
+    const searchName = itemName.trim();
     
-    if (this.imageCache.has(cacheKey)) {
-      return of(this.imageCache.get(cacheKey) || null);
+    if (this.imageCache.has(searchName)) {
+      return of(this.imageCache.get(searchName) || null);
     }
 
-    // Use proxy to get image URL
-    return this.http.get<any>(`${this.proxyUrl}?title=${encodeURIComponent(searchName)}&isUnique=${isUnique}`).pipe(
+    return this.http.get<any>(`${this.proxyUrl}?title=${encodeURIComponent(searchName)}`).pipe(
       map(response => {
         const imageUrl = response?.imageUrl || null;
         if (imageUrl) {
-          this.imageCache.set(cacheKey, imageUrl);
+          this.imageCache.set(searchName, imageUrl);
         }
         return imageUrl;
       })

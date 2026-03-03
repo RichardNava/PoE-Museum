@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { BuildService } from '../../services/build';
 import { AuthService } from '../../services/auth';
+import { PoeWikiService } from '../../services/poe-wiki';
 import { Build } from '../../models/build.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -36,7 +37,8 @@ export class CreateBuild implements OnInit {
 
   versiones: { name: string; pobb: string }[] = [];
   nuevaVersion = { name: '', pobb: '' };
-  items_mandatory: string[] = [];
+  items_mandatory: { description: string; img: string }[] = [];
+  itemsLoading = false;
   imagePreview: string | null = null;
   imageError: string | null = null;
   isLoading = false;
@@ -46,6 +48,7 @@ export class CreateBuild implements OnInit {
   isItemModalOpen = false;
   maxItems = 8;
   canUploadLocalImage = false;
+  originalUsuarioId: string | null = null;
 
   clases = [
     'Marauder', 'Ranger', 'Witch', 'Shadow', 'Duelist', 'Templar', 'Scion'
@@ -80,7 +83,8 @@ export class CreateBuild implements OnInit {
     private location: Location,
     private buildService: BuildService,
     private authService: AuthService,
-    private http: HttpClient
+    private http: HttpClient,
+    private poeWikiService: PoeWikiService
   ) {}
 
   ngOnInit(): void {
@@ -97,7 +101,24 @@ export class CreateBuild implements OnInit {
       this.buildId = buildToEdit._id || null;
       this.build = { ...buildToEdit };
       this.versiones = buildToEdit.versiones || [];
-      this.items_mandatory = buildToEdit.items_mandatory || [];
+      
+      // Preservar usuario_id del build original
+      this.originalUsuarioId = buildToEdit.usuario_id || null;
+      
+      // Convertir items_mandatory al nuevo formato (objetos con description e img)
+      if (buildToEdit.items_mandatory && buildToEdit.items_mandatory.length > 0) {
+        this.items_mandatory = buildToEdit.items_mandatory.map((item: any) => {
+          if (typeof item === 'string') {
+            // Formato antiguo: string → convertir a objeto
+            return { description: item, img: '' };
+          }
+          // Formato nuevo: objeto
+          return { description: item.description || '', img: item.img || '' };
+        });
+      } else {
+        this.items_mandatory = [];
+      }
+      
       if (this.build.imagen) {
         this.imagePreview = this.buildService.getImageUrl(this.build.imagen, this.build.imagen_mime);
       }
@@ -118,7 +139,11 @@ export class CreateBuild implements OnInit {
 
   addItem(itemText: string): void {
     if (this.items_mandatory.length < this.maxItems) {
-      this.items_mandatory.push(itemText);
+      // Añadir el item con img vacío - el backend procesará la imagen
+      this.items_mandatory.push({
+        description: itemText,
+        img: ''
+      });
     }
     this.closeItemModal();
   }
@@ -221,18 +246,18 @@ export class CreateBuild implements OnInit {
         }
         
         const buildData = {
-          nombre: this.build.nombre,
-          clase: this.build.clase,
-          ascendencia: this.build.ascendencia,
-          autor: this.build.autor,
-          usuario_id: this.build.usuario_id,
-          descripcion: this.build.descripcion,
-          ventajas: this.build.ventajas,
-          desventajas: this.build.desventajas,
-          imagen: this.build.imagen,
-          imagen_mime: this.build.imagen_mime,
-          versiones: this.versiones,
-          items_mandatory: this.items_mandatory,
+          nombre: this.build.nombre || '',
+          clase: this.build.clase || '',
+          ascendencia: this.build.ascendencia || '',
+          autor: this.build.autor || '',
+          usuario_id: this.isEditing ? (this.originalUsuarioId || this.build.usuario_id) : this.build.usuario_id,
+          descripcion: this.build.descripcion || '',
+          ventajas: this.build.ventajas || '',
+          desventajas: this.build.desventajas || '',
+          imagen: this.build.imagen || '',
+          imagen_mime: this.build.imagen_mime || '',
+          versiones: this.versiones || [],
+          items_mandatory: this.items_mandatory || [],
           valoraciones: {
             boss_dmg: Number(this.build.valoraciones?.boss_dmg) || 0,
             comfort: Number(this.build.valoraciones?.comfort) || 0,
@@ -245,31 +270,31 @@ export class CreateBuild implements OnInit {
 
         if (this.isEditing && this.buildId) {
           this.buildService.updateBuild(this.buildId, buildData as Build).subscribe({
-            next: (updated) => {
+            next: (updated: Build) => {
               this.isLoading = false;
               alert('Build actualizada correctamente');
-              this.router.navigate(['/build', updated._id]);
+              this.router.navigate(['/my-builds']);
             },
-            error: (error) => {
+            error: (error: any) => {
               this.isLoading = false;
               alert('Error al actualizar la build: ' + error.message);
             }
           });
         } else {
           this.buildService.createBuild(buildData as Build).subscribe({
-            next: (created) => {
+            next: (created: Build) => {
               this.isLoading = false;
               alert('Build creada correctamente');
               this.router.navigate(['/build', created._id]);
             },
-            error: (error) => {
+            error: (error: any) => {
               this.isLoading = false;
               alert('Error al crear la build: ' + error.message);
             }
           });
         }
       })
-      .catch(error => {
+      .catch((error: any) => {
         this.isLoading = false;
         alert('Error al subir la imagen: ' + error.message);
       });

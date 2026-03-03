@@ -172,7 +172,7 @@
 
         <div class="items-list" *ngIf="items_mandatory && items_mandatory.length > 0">
           <div class="item-entry" *ngFor="let item of items_mandatory; let i = index">
-            <app-poe-item [itemText]="item" [compact]="true"></app-poe-item>
+            <app-poe-item [itemText]="item.description" [compact]="true"></app-poe-item>
             <button type="button" class="remove-item-btn" (click)="removeItem(i)">
               <i class="fas fa-times"></i> Eliminar
             </button>

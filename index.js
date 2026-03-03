@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const https = require('https');
 const connectDB = require('./config/db');
+const poemRoutes = require('./routes/poem');
 
 const app = express();
 
@@ -95,48 +96,13 @@ app.get('/api/poe-wiki/image', async (req, res) => {
         return res.status(400).json({ error: 'Title is required' });
     }
 
-    // Construir directamente el nombre del archivo
-    const apiUrl = `https://www.poewiki.net/api.php?action=query&prop=imageinfo&titles=File:${title.replace(/'/g, "%27").replace(/ /g, "_")}_inventory_icon.png&iiprop=url&format=json`;
-
-    https.get(apiUrl, (apiRes) => {
-        let data = '';
-
-        apiRes.on('data', (chunk) => {
-            data += chunk;
-        });
-
-        apiRes.on('end', () => {
-            try {
-                const response = JSON.parse(data);
-                const pages = response?.query?.pages;
-
-                if (!pages) {
-                    return res.json({ imageUrl: null });
-                }
-
-                let imageUrl = null;
-
-                for (const pageId in pages) {
-                    // Manejar pageid negativo o faltante
-                    if (parseInt(pageId) < 0) continue;
-
-                    const page = pages[pageId];
-                    if (page.imageinfo && page.imageinfo[0] && page.imageinfo[0].url) {
-                        imageUrl = page.imageinfo[0].url;
-                        break;
-                    }
-                }
-
-                return res.json({ imageUrl });
-            } catch (e) {
-                console.error('[Proxy] Error parsing response:', e);
-                return res.status(500).json({ error: 'Failed to parse response' });
-            }
-        });
-    }).on('error', (e) => {
-        console.error('[Proxy] Error making request:', e);
+    try {
+        const imageUrl = await poemRoutes.processImageURI(title);
+        res.json({ imageUrl });
+    } catch (e) {
+        console.error('[Proxy] Error:', e);
         res.status(500).json({ error: e.message });
-    });
+    }
 });
 
 // Endpoint alternativo sin Mongoose model
@@ -160,41 +126,6 @@ app.get('/api/builds', async (req, res) => {
             details: error.stack
         });
     }
-});
-
-// Endpoint de prueba con datos mock
-app.get('/api/builds/mock', (req, res) => {
-    const mockBuilds = [
-        {
-            _id: "1",
-            nombre: "Tragthusk - Righteous Fire CWS",
-            autor: "Rnava",
-            clase: "Marauder",
-            ascendencia: "Chieftain",
-            descripcion: "Walking simulator que basa su daño en RF y varias habilidades de fuego.",
-            ventajas: "- Clear pasivo\n- Muy tanky\n- Cómodidad extrema",
-            desventajas: "- Daño de boss limitado\n- Gear específico",
-            imagen: "",
-            imagen_mime: "",
-            valoraciones: {
-                boss_dmg: 2.7,
-                comfort: 5,
-                difficulty: 1.6,
-                fun: 3.8,
-                map_speed_clear: 4.2,
-                survivality: 4.9
-            },
-            versiones: [
-                {
-                    name: "Fire Staff + Endurance Stack",
-                    pobb: "https://pobb.in/ItuXrPxPUECs"
-                }
-            ],
-            fecha_creacion: new Date("2026-01-12T01:28:23.000Z")
-        }
-    ];
-    console.log('Enviando datos mock');
-    res.json(mockBuilds);
 });
 
 app.use('/poem', require('./routes/poem'));

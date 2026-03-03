@@ -14,6 +14,11 @@ const versionSchema = new mongoose.Schema({
     pobb: { type: String, required: true }
 });
 
+const itemMandatorySchema = new mongoose.Schema({
+    description: { type: String, required: true },
+    img: { type: String, default: '' }
+}, { _id: false });
+
 const buildSchema = new mongoose.Schema({
     nombre: { type: String, required: true },
     autor: { type: String, required: true },
@@ -27,7 +32,7 @@ const buildSchema = new mongoose.Schema({
     imagen_mime: { type: String, default: '' },
     valoraciones: { type: valoracionSchema, required: true },
     versiones: [versionSchema],
-    items_mandatory: [{ type: String }],
+    items_mandatory: [itemMandatorySchema],
     fecha_creacion: { type: Date, default: Date.now }
 }, {
     collection: 'builds',

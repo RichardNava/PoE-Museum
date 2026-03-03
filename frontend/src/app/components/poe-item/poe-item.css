@@ -238,6 +238,19 @@
   color: #ffd700;
 }
 
+/* Explicit modifier colors */
+.explicit-crafted {
+  color: #ffffff !important;
+}
+
+.explicit-fractured {
+  color: #888888 !important;
+}
+
+.explicit-crucible {
+  color: #ff9900 !important;
+}
+
 .tooltip-influence {
   color: #aa6ccc;
   font-style: italic;
@@ -356,6 +369,19 @@
 
 .implicits .section-content {
   color: #ffd700;
+}
+
+/* Explicit modifier colors */
+.explicit-crafted {
+  color: #ffffff !important;
+}
+
+.explicit-fractured {
+  color: #888888 !important;
+}
+
+.explicit-crucible {
+  color: #ff9900 !important;
 }
 
 /* Influence */
