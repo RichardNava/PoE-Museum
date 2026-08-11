@@ -11,39 +11,69 @@
       </button>
     </div>
   </div>
-  
-  <div class="builds-grid" *ngIf="builds.length > 0; else emptyState">
-    <div class="build-card" *ngFor="let build of builds; let i = index" (click)="viewBuild(build._id)">
-      <div class="card-image">
-        <img *ngIf="build.imagen" [src]="getImageUrl(build.imagen, build.imagen_mime)" [alt]="build.nombre" />
-        <div *ngIf="!build.imagen" class="card-placeholder">
-          <i class="fas fa-shield-alt"></i>
-          <span>Sin imagen</span>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-header">
-          <h3 class="card-title">{{ build.nombre }}</h3>
-          <span class="card-class">
-            <i class="fas fa-crown"></i>
-            {{ build.ascendencia }}
-          </span>
-        </div>
-        <p class="card-author">{{ build.clase }} • {{ build.autor }}</p>
-        <div class="card-stats" *ngIf="build.valoraciones">
-          <span class="stat-badge damage" title="Daño">
-            <i class="fas fa-skull"></i> {{ build.valoraciones.boss_dmg }}
-          </span>
-          <span class="stat-badge comfort" title="Comodidad">
-            <i class="fas fa-star"></i> {{ build.valoraciones.comfort }}
-          </span>
-          <span class="stat-badge survival" title="Supervivencia">
-            <i class="fas fa-heart"></i> {{ build.valoraciones.survivality }}
-          </span>
-        </div>
-      </div>
-    </div>
+
+  <div class="active-search" *ngIf="activeSearchTerm">
+    <span><i class="fas fa-search" aria-hidden="true"></i> Búsqueda: “{{ activeSearchTerm }}”</span>
+    <button type="button" (click)="clearSearch()" aria-label="Quitar filtro de búsqueda">
+      <i class="fas fa-times" aria-hidden="true"></i> Quitar filtro
+    </button>
   </div>
+
+  <div class="cache-warning" *ngIf="isShowingCachedBuilds && !isLoading" role="status">
+    <i class="fas fa-clock-rotate-left" aria-hidden="true"></i>
+    No se pudo actualizar el archivo. Mostrando la última versión disponible.
+  </div>
+  
+  <section class="loading-state" *ngIf="isLoading && showLoadingState" role="status" aria-live="polite">
+    <div class="loading-seal" aria-hidden="true"><i class="fas fa-compass"></i></div>
+    <div>
+      <p class="loading-kicker">Archivo de expedición</p>
+      <h2 *ngIf="!isServerWaking">Conectando con el archivo de builds...</h2>
+      <h2 *ngIf="isServerWaking">El servidor está despertando</h2>
+      <p *ngIf="!isServerWaking">Cargando registros de Path of Exile.</p>
+      <p *ngIf="isServerWaking">Render está iniciando el servicio. Esto puede tardar unos segundos.</p>
+    </div>
+  </section>
+
+  <section class="load-error" *ngIf="loadError" role="alert">
+    <i class="fas fa-plug-circle-xmark" aria-hidden="true"></i>
+    <h2>No se pudo conectar con el archivo</h2>
+    <p>Comprueba tu conexión y vuelve a intentarlo.</p>
+    <button type="button" class="btn-retry" (click)="retryLoadBuilds()"><i class="fas fa-rotate-right"></i> Reintentar</button>
+  </section>
+
+  <ng-container *ngIf="!isLoading && !loadError">
+    <div class="builds-grid" *ngIf="builds.length > 0; else emptyState">
+      <a class="build-card" *ngFor="let build of builds" [routerLink]="['/build', build._id]" [attr.aria-label]="'Ver build ' + build.nombre">
+        <div class="card-image">
+          <img *ngIf="build.imagen" [src]="getImageUrl(build.imagen, build.imagen_mime)" [alt]="build.nombre" />
+          <div *ngIf="!build.imagen" class="card-placeholder">
+            <i class="fas fa-shield-alt"></i>
+            <span>Sin imagen</span>
+          </div>
+          <span class="archive-mark">{{ build.clase }}</span>
+          <span class="archive-tab">{{ build.ascendencia }}</span>
+        </div>
+        <div class="card-content">
+          <div class="card-header">
+            <h3 class="card-title">{{ build.nombre }}</h3>
+          </div>
+          <p class="card-author">Registrada por {{ build.autor }}</p>
+          <div class="card-stats" *ngIf="build.valoraciones">
+            <span class="stat-badge damage" title="Daño">
+              <i class="fas fa-skull"></i><b>{{ build.valoraciones.boss_dmg }}</b> Daño
+            </span>
+            <span class="stat-badge comfort" title="Mapeo">
+              <i class="fas fa-route"></i><b>{{ build.valoraciones.map_speed_clear }}</b> Mapeo
+            </span>
+            <span class="stat-badge survival" title="Supervivencia">
+              <i class="fas fa-heart"></i><b>{{ build.valoraciones.survivality }}</b> Superv.
+            </span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </ng-container>
   
   <ng-template #emptyState>
     <div class="empty-state">

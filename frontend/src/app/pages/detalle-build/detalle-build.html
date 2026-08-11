@@ -1,15 +1,21 @@
 <div class="container" *ngIf="build; else loading" [style.background-image]="claseBackground ? 'url(' + claseBackground + ')' : ''" [style.background-size]="'cover'" [style.background-position]="'center'" [style.background-repeat]="'no-repeat'">
   <div class="build-detail">
-    
-    <!-- Fila principal: Imagen a la izquierda, info a la derecha -->
+    <header class="build-identity">
+      <p class="build-kicker">Archivo de expedición</p>
+      <h1>{{ build.nombre }}</h1>
+      <p>{{ build.clase }} <span aria-hidden="true">/</span> {{ build.ascendencia }}</p>
+    </header>
+
     <div class="main-content-grid">
-      <!-- Columna izquierda: Imagen -->
       <div class="left-column">
-        <div class="card imagen-card" (click)="openImageModal()" style="cursor: pointer;">
-          <div class="card-title"><i class="fas fa-image"></i> Imagen</div>
-          <div class="image-container" *ngIf="build.imagen; else noImage">
-            <img [src]="getImageUrl(build.imagen, build.imagen_mime)" [alt]="build.nombre" />
-          </div>
+        <div class="card imagen-card">
+          <div class="card-title"><i class="fas fa-image"></i> Registro visual</div>
+          <button class="image-trigger" type="button" (click)="openImageModal()" [disabled]="!build.imagen" [attr.aria-label]="'Ampliar imagen de ' + build.nombre">
+            <div class="image-container" *ngIf="build.imagen; else noImage">
+              <img [src]="getImageUrl(build.imagen, build.imagen_mime)" [alt]="build.nombre" />
+              <span class="image-expand"><i class="fas fa-expand-alt"></i> Ampliar</span>
+            </div>
+          </button>
           <ng-template #noImage>
             <div class="image-container">
               <div class="image-placeholder">
@@ -20,8 +26,11 @@
           </ng-template>
         </div>
 
-        <!-- Ascendencia y Autor debajo de la imagen -->
         <div class="info-cards-row">
+          <div class="card">
+            <div class="card-title"><i class="fas fa-shield-alt"></i> Clase</div>
+            <div class="card-content"><i class="fas fa-chess-king"></i> {{ build.clase }}</div>
+          </div>
           <div class="card">
             <div class="card-title"><i class="fas fa-star"></i> Ascendencia</div>
             <div class="card-content">
@@ -37,15 +46,7 @@
         </div>
       </div>
 
-      <!-- Columna derecha: Info -->
       <div class="right-column">
-        <!-- Nombre -->
-        <div class="card nombre-card">
-          <div class="card-title"><i class="fas fa-crown"></i> Nombre</div>
-          <div class="card-content">{{ build.nombre }}</div>
-        </div>
-
-        <!-- Valoraciones - 3 columnas -->
         <div class="card">
           <div class="card-title"><i class="fas fa-star-half-alt"></i> Valoraciones</div>
           <div class="valoraciones-grid">
@@ -124,14 +125,12 @@
           </div>
         </div>
 
-        <!-- Versiones PoB -->
         <div class="card versiones-card" [class.versiones-expanded]="isVersionesOpen" *ngIf="hasVersions">
           <div class="card-title versions-title" (click)="toggleVersiones()">
             <div class="title-content"><i class="fas fa-code-branch"></i> Versiones PoB</div>
             <i class="fas fa-chevron-down version-chevron"></i>
           </div>
           
-          <!-- Versión actual -->
           <div class="versiones-container">
             <div class="version-item version-main">
               <i class="fas fa-link"></i>
@@ -139,7 +138,6 @@
               <i class="fas fa-external-link-alt external-icon"></i>
             </div>
             
-            <!-- Dropdown con el resto de versiones -->
             <div class="versiones-dropdown" *ngIf="isVersionesOpen">
               <div class="version-item" *ngFor="let version of getOtherVersions()" (click)="selectVersion(version.index)">
                 <i class="fas fa-link"></i>
@@ -152,17 +150,13 @@
       </div>
     </div>
 
-    <!-- Fila inferior: Descripción, Ventajas, Desventajas -->
     <div class="bottom-row">
-      <!-- Descripción -->
       <div class="card description-card">
         <div class="card-title"><i class="fas fa-align-left"></i> Descripción</div>
         <div class="card-content" [innerHTML]="build.descripcion | wikiLink"></div>
       </div>
 
-      <!-- Ventajas y Desventajas en la misma fila -->
       <div class="pros-cons-row">
-        <!-- Ventajas -->
         <div class="card pros-card">
           <div class="card-title"><i class="fas fa-thumbs-up"></i> Ventajas</div>
           <ul class="pros-cons-list">
@@ -172,7 +166,6 @@
           </ul>
         </div>
 
-        <!-- Desventajas -->
         <div class="card cons-card">
           <div class="card-title"><i class="fas fa-thumbs-down"></i> Desventajas</div>
           <ul class="pros-cons-list">
@@ -184,7 +177,6 @@
       </div>
     </div>
 
-    <!-- Items Mandatory -->
     <div class="items-mandatory-section" *ngIf="hasItemsMandatory">
       <div class="section-title">
         <i class="fas fa-cubes"></i> Items Mandatory
@@ -199,7 +191,6 @@
       </div>
     </div>
 
-    <!-- Botones -->
     <div class="buttons">
       <button class="btn btn-volver" (click)="goBack()">
         <i class="fas fa-arrow-left"></i> Volver
@@ -215,10 +206,9 @@
   </div>
 </div>
 
-<!-- Modal para imagen -->
 <div class="modal-overlay" *ngIf="isImageModalOpen" (click)="closeImageModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <button class="modal-close" (click)="closeImageModal()">
+  <div class="modal-content" role="dialog" aria-modal="true" [attr.aria-label]="'Imagen ampliada de ' + build?.nombre" (click)="$event.stopPropagation()">
+    <button class="modal-close" type="button" (click)="closeImageModal()" aria-label="Cerrar imagen ampliada">
       <i class="fas fa-times"></i>
     </button>
     <img [src]="build ? getImageUrl(build.imagen, build.imagen_mime) : ''" [alt]="build?.nombre" />

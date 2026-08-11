@@ -1,42 +1,51 @@
 <header class="navbar">
   <div class="navbar-left">
-    <div class="logo">
+    <a class="logo" routerLink="/home" aria-label="PoE Museum, volver a la galería">
       <img src="assets/logo.svg" alt="PoE Museum" />
       <span class="logo-text">PoE Museum</span>
-    </div>
+    </a>
   </div>
   
-  <nav class="navbar-center">
+  <button class="navigation-toggle" type="button" (click)="toggleNavigation()" [attr.aria-expanded]="isNavigationOpen" aria-controls="site-navigation">
+    <i class="fas" [class.fa-bars]="!isNavigationOpen" [class.fa-times]="isNavigationOpen"></i>
+    <span class="sr-only">{{ isNavigationOpen ? 'Cerrar navegación' : 'Abrir navegación' }}</span>
+  </button>
+
+  <nav class="navbar-center" id="site-navigation" [class.active]="isNavigationOpen">
     <ul class="nav-links">
-      <li><a routerLink="/home" routerLinkActive="active" class="nav-link"><i class="fas fa-layer-group"></i> Galería</a></li>
+      <li><a routerLink="/home" routerLinkActive="active" class="nav-link" (click)="closeNavigation()"><i class="fas fa-layer-group"></i> Galería</a></li>
       <ng-container *ngIf="currentUser; else notLoggedInNav">
-        <li><a routerLink="/my-builds" routerLinkActive="active" class="nav-link"><i class="fas fa-user"></i> Mis Builds</a></li>
-        <li><a routerLink="/create-build" class="nav-link"><i class="fas fa-plus-circle"></i> Crear Build</a></li>
+        <li><a routerLink="/my-builds" routerLinkActive="active" class="nav-link" (click)="closeNavigation()"><i class="fas fa-user"></i> Mis Builds</a></li>
+        <li><a routerLink="/create-build" class="nav-link" (click)="closeNavigation()"><i class="fas fa-plus-circle"></i> Crear Build</a></li>
       </ng-container>
       <ng-template #notLoggedInNav>
         <li class="nav-item-disabled"><span class="nav-link disabled"><i class="fas fa-user"></i> Mis Builds</span></li>
-        <li><a routerLink="/login" class="nav-link"><i class="fas fa-plus-circle"></i> Crear Build</a></li>
+        <li><a routerLink="/login" class="nav-link" (click)="closeNavigation()"><i class="fas fa-plus-circle"></i> Crear Build</a></li>
       </ng-template>
     </ul>
+    <div class="mobile-search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Buscar builds..." [(ngModel)]="searchTerm" (keyup.enter)="onSearch(); closeNavigation()" />
+    </div>
   </nav>
   
   <div class="navbar-right">
     <div class="search-box">
       <i class="fas fa-search"></i>
-      <input 
+      <input
         type="text" 
         placeholder="Buscar builds..." 
         [(ngModel)]="searchTerm"
-        (keyup.enter)="onSearch()"
+        (keyup.enter)="onSearch(); closeNavigation()"
       />
     </div>
     
     <div class="user-menu">
       <!-- Usuario logueado -->
       <ng-container *ngIf="currentUser; else loginButtons">
-        <div class="user-icon logged-in" (click)="toggleMenu()">
+        <button class="user-icon logged-in" type="button" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen" aria-label="Abrir menú de usuario">
           <i class="fas fa-user"></i>
-        </div>
+        </button>
         <div class="dropdown-menu" [class.active]="isMenuOpen">
           <span class="user-greeting">Hola, {{ currentUser.nombre }}</span>
           <div class="dropdown-divider"></div>
@@ -50,9 +59,9 @@
       
       <!-- Usuario no logueado -->
       <ng-template #loginButtons>
-        <div class="user-icon" (click)="toggleMenu()">
+        <button class="user-icon" type="button" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen" aria-label="Abrir opciones de cuenta">
           <i class="fas fa-user"></i>
-        </div>
+        </button>
         <div class="dropdown-menu" [class.active]="isMenuOpen">
           <a routerLink="/login" class="dropdown-item" (click)="isMenuOpen = false"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
           <a routerLink="/register" class="dropdown-item" (click)="isMenuOpen = false"><i class="fas fa-user-plus"></i> Crear Perfil</a>

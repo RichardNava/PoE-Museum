@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
-import { BuildService } from '../../services/build';
 import { User } from '../../models/user.model';
 
 @Component({
@@ -12,12 +11,12 @@ import { User } from '../../models/user.model';
 })
 export class Header implements OnInit {
   isMenuOpen = false;
+  isNavigationOpen = false;
   currentUser: User | null = null;
   searchTerm = '';
 
   constructor(
     private authService: AuthService,
-    private buildService: BuildService,
     private router: Router
   ) {}
 
@@ -28,19 +27,29 @@ export class Header implements OnInit {
   }
 
   onSearch(): void {
-    this.buildService.setSearchTerm(this.searchTerm);
-    if (this.router.url !== '/home') {
-      this.router.navigate(['/home']);
-    }
+    const query = this.searchTerm.trim();
+    this.searchTerm = '';
+    this.router.navigate(['/home'], {
+      queryParams: query ? { q: query } : {}
+    });
   }
 
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
+  toggleNavigation(): void {
+    this.isNavigationOpen = !this.isNavigationOpen;
+  }
+
+  closeNavigation(): void {
+    this.isNavigationOpen = false;
+  }
+
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/home']);
     this.isMenuOpen = false;
+    this.isNavigationOpen = false;
   }
 }

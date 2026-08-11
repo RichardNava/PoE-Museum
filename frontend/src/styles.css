@@ -1,30 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IM+Fell+English+SC&display=swap');
 @import 'ngx-toastr/toastr';
 
 :root {
-  --color-bg-primary: #0d0d0d;
-  --color-bg-secondary: #141414;
-  --color-bg-card: #1a1a1a;
-  --color-accent-primary: #e8a900;
-  --color-accent-secondary: #f5b800;
-  --color-accent-tertiary: #c78c00;
-  --color-text-primary: #e8e8e8;
-  --color-text-secondary: #a0a0a0;
-  --color-text-muted: #666666;
-  --color-border: rgba(232, 169, 0, 0.15);
-  --color-border-hover: rgba(232, 169, 0, 0.4);
+  --color-bg-primary: #10100e;
+  --color-bg-secondary: #181711;
+  --color-bg-card: #211f17;
+  --color-accent-primary: #d6a84b;
+  --color-accent-secondary: #f0cd7d;
+  --color-accent-tertiary: #9d7331;
+  --color-accent-danger: #b64234;
+  --color-text-primary: #f0eadc;
+  --color-text-secondary: #c4bcac;
+  --color-text-muted: #8b8579;
+  --color-border: rgba(214, 168, 75, 0.22);
+  --color-border-hover: rgba(240, 205, 125, 0.62);
   
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'IM Fell English SC', Georgia, serif;
+  --font-utility: 'IBM Plex Mono', monospace;
   
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.6);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.7);
   --shadow-glow: 0 0 30px rgba(232, 169, 0, 0.2);
   
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
   
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;
@@ -45,6 +48,7 @@ html {
 body {
   font-family: var(--font-family);
   background-color: var(--color-bg-primary);
+  background-image: radial-gradient(circle at 15% 0%, rgba(214, 168, 75, 0.07), transparent 30%), linear-gradient(125deg, #10100e 0%, #15130e 100%);
   color: var(--color-text-primary);
   line-height: 1.6;
   min-height: 100vh;
@@ -60,6 +64,11 @@ a {
 
 a:hover {
   color: var(--color-accent-secondary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-secondary);
+  outline-offset: 3px;
 }
 
 img {
@@ -114,10 +123,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .main-content {
   min-height: calc(100vh - 70px);
-  padding-top: 3rem;
-  background: 
-  url('https://images5.alphacoders.com/133/1333780.jpeg') no-repeat center center,
-  linear-gradient(180deg, rgba(13, 13, 13, 0.88) 0%, rgba(13, 13, 13, 0.92) 100%);
+  padding-top: 72px;
+  background-image: linear-gradient(180deg, rgba(16, 16, 14, 0.56), rgba(16, 16, 14, 0.70)), url('https://images5.alphacoders.com/133/1333780.jpeg');
+  background-position: center;
   background-size: cover;
   background-attachment: fixed;
 }
@@ -146,6 +154,15 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Wiki links - {text} format */
